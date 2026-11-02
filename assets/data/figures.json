@@ -1,0 +1,264 @@
+{
+ "figure1": {
+  "src": "assets/img/figures/figure1_example_episodes.webp",
+  "w": 2200,
+  "h": 1392,
+  "format": "webp",
+  "srcset": "assets/img/figures/figure1_example_episodes-1100.webp 1100w, assets/img/figures/figure1_example_episodes.webp 2200w",
+  "alt": "Three rows of five Street View frames, one row per task, read left to right from the initial view, with the tool calls that produced each new view printed beneath it. Precise Localization (answer: 18.9835017, -99.093938) boxes natural clues (terrain, vegetation) and human-made ones (a VW Beetle, Spanish signage, phone numbers, a restaurant name and a distinctive shopfront); Place Naming (“What country are we in?”, answer: Kenya) boxes a supermarket-chain sign and a Kenyan flag; Navigation Challenge (“What country’s flag is outside the house to the right of our initial view?”, answer: United States) turns, moves and zooms toward a US flag.",
+  "title": "Example GeoGuesser Bench episodes.",
+  "caption": "Example GeoGuesser Bench episodes. Read left to right; calls below each new view specify the transition. Boxes mark natural (green) and human-made (red) clues. From top: Precise Localization, Place Naming, and Navigation Challenge. Prompts are abbreviated or illustrative.",
+  "max_width": 1100,
+  "credit": "Imagery: Google Street View",
+  "note": "Illustrative traces: the authors chose the tool calls to reach the clues; these are not model rollouts."
+ },
+ "global_distribution": {
+  "src": "assets/img/figures/global_distribution.png",
+  "w": 2200,
+  "h": 324,
+  "format": "png",
+  "alt": "Four small world maps, one per split, with a dot at each starting location: Competition (n = 42), Synthetic (n = 80), Place Naming (n = 80) and Navigation Challenge (n = 80). Place Naming and Navigation Challenge points are densest in the United States and Europe; mainland China and much of Russia and Africa have few or no points.",
+  "title": "Starting locations of each split.",
+  "caption": "Starting locations of each split. Competition and Synthetic are the two Precise Localization splits; Place Naming and Navigation Challenge favor urban and suburban areas. Empty regions largely reflect scarce or absent Street View imagery, as in mainland China and much of Russia and Africa.",
+  "max_width": 1100
+ },
+ "exploration_granularity": {
+  "src": "assets/img/figures/exploration_granularity.svg",
+  "w": 519,
+  "h": 174,
+  "format": "svg",
+  "alt": "Two line charts sharing one legend. (a) Mean move_* calls per completed episode on Competition, Synthetic, Place Naming and Navigation Challenge for GPT-5.4, Qwen3.7-Plus, Claude Opus 4.8 and Claude Opus 4.7: all four make 2.3 to 3.1 calls on the two Precise Localization splits; on Navigation Challenge three of them rise to 8.2 to 9.3 while GPT-5.4 reaches 3.3, and Claude Opus 4.7 also moves 7.4 times per Place Naming episode. (b) Place Naming accuracy by question granularity for Claude Fable 5, Claude Opus 4.8, Claude Opus 4.7, GPT-5.5 and GPT-5.4 Pro: 81.5% to 88.9% on country questions (n = 27), falling to 27.3% to 45.5% on street questions (n = 11), with Claude Fable 5 dipping to 27.3% on state questions (n = 11).",
+  "title": "Exploration and region granularity.",
+  "caption": "Exploration and region granularity. (a) Mean move_* calls per completed episode for the four strongest models by mean Precise Localization score: all four move little on Precise Localization, and three move far more on Navigation Challenge. (b) Accuracy of the five strongest Place Naming models by the granularity the question asks for. Claude Fable 5’s dip at the state level comes from the step budget: all eight state questions it missed ended at the step limit.",
+  "max_width": 960
+ },
+ "fm_counts_by_model": {
+  "src": "assets/img/figures/fm_counts_by_model.svg",
+  "w": 361,
+  "h": 158,
+  "format": "svg",
+  "alt": "Horizontal stacked bar chart of failed episodes per model, split by failure mode (FM1 vision, FM2 navigation, FM3 tool use): Claude Opus 4.6, n = 186, mostly FM2 (169) with a small FM1 segment; GPT-5.2, n = 218 (FM1 44, FM2 178, FM3 27); Qwen3.5-397B-A17B, n = 207 (FM1 127, FM2 70, FM3 21); Qwen3.5-122B-A10B, n = 254 (FM1 36, FM2 187, FM3 48).",
+  "title": "Failure modes by model.",
+  "caption": "Failure modes by model. Failed episodes assigned each mode, pooled over the four task splits; n is the number of failed episodes, and an episode can have several modes.",
+  "max_width": 640
+ },
+ "coverage_panorama": {
+  "src": "assets/img/figures/coverage_panorama.webp",
+  "w": 1800,
+  "h": 836,
+  "format": "webp",
+  "srcset": "assets/img/figures/coverage_panorama-900.webp 900w, assets/img/figures/coverage_panorama.webp 1800w",
+  "alt": "Equirectangular Street View panorama of a road through dry scrubland, darkened except inside the reconstructed camera views of one no-movement episode: a band of overlapping views around the horizon is bright, while the sky, the ground and a gap between views stay dark.",
+  "title": "Visual coverage within one panorama.",
+  "caption": "Visual coverage within one panorama. Bright regions fall within the reconstructed camera views of an example no-movement episode; dark regions were never viewed. The mask shows which directions were viewed, not what the agent attended to.",
+  "max_width": 900,
+  "credit": "Imagery: Google Street View"
+ },
+ "coverage_vs_score": {
+  "src": "assets/img/figures/coverage_vs_score.png",
+  "w": 1600,
+  "h": 823,
+  "format": "png",
+  "alt": "Scatter plot of union coverage of the viewing sphere (x axis, 0 to 1) against GeoGuessr score (y axis, 0 to 5000) for no-movement Precise Localization episodes of ten models, colored by the maximum absolute pitch reached (0-15, 16-30, 31-45 and 46+ degrees). Most points lie left of a dotted vertical line at about 0.49, the coverage of a full horizontal sweep; scores span the whole range across coverage levels, with many points at 5000 and at 0.",
+  "title": "Panorama coverage versus performance–No Movement, Precise Localization.",
+  "caption": "Panorama coverage versus performance–No Movement, Precise Localization. Observations from ten models on Competition and Synthetic are pooled in one plot of panorama coverage against GeoGuessr score; color denotes maximum absolute pitch. Invalid responses remain at zero score, and zero coverage denotes an empty reconstructed trace. The dotted line at approximately 0.49 indicates the coverage limit of a full horizon sweep at the default field of view; pitch changes or wider fields of view can exceed it.",
+  "max_width": 800
+ },
+ "planner_worker_compressor": {
+  "src": "assets/img/figures/planner_worker_compressor.svg",
+  "w": 670,
+  "h": 154,
+  "format": "svg",
+  "alt": "Diagram of the Planner–Worker–Compressor harness. Observations from the Environment go to Memory. The Compressor receives Memory’s history and the task and passes a summary to the Planner, which also receives the task and, as an image input (dashed arrow), selected images from Memory. On CONTINUE the Planner instructs the Worker, which also sees the current panorama (dashed arrow) and sends an atomic action to the Environment; on DONE the Planner returns the final answer.",
+  "title": "Planner–Worker–Compressor framework.",
+  "caption": "Planner–Worker–Compressor framework. The Compressor condenses recent actions and key-frame notes into a brief and focus_hint; selected images remain available to the Planner. The Planner either returns an answer or instructs the Worker to act, producing new observations for Memory. Dashed arrows denote image inputs to the models.",
+  "max_width": 960
+ },
+ "failure_examples": {
+  "src": "assets/img/figures/failure_examples.webp",
+  "w": 2400,
+  "h": 504,
+  "format": "webp",
+  "srcset": "assets/img/figures/failure_examples-1200.webp 1200w, assets/img/figures/failure_examples.webp 2400w",
+  "alt": "Five Street View panels in a row. (a) Qwen3.5-397B's intermediate view of a road with snowbanks, pine trees, a crosswalk and a blue sign. (b) GPT-5.2's final view of a wide road with palm trees and billboards, next to the intended final view, a street sign reading S Paradise Rd 4500. (c) The target Claude Opus 4.6 chose, the back of a house with a gabled roof outlined in red with boxes labeled Patio 1 and Patio 2, next to the intended target, a three-story apartment building outlined in green.",
+  "title": "Failure-mode examples.",
+  "caption": "Failure-mode examples. (a) FM2, Place Naming (“What street are we on?”), intermediate view: the agent overlooks blue signage and crosswalks that suggest a nearby street sign, and answers “I do not know.” (b) FM1, the same question at another location: from its final view, the agent answers “Las Vegas Boulevard South” based on the skyline and roadside businesses instead of exploring toward the intended view. (c) FM1, Navigation Challenge (“How many distinct, third floor patios does this building have?”): the model fixates on a house with a gabled roof rather than the intended building. The paper gives the full prompts and responses.",
+  "max_width": 1100,
+  "credit": "Imagery: Google Street View",
+  "panels": [
+   {
+    "src": "assets/img/figures/panel_fm_4.webp",
+    "w": 640,
+    "h": 640,
+    "label": "(a) Qwen3.5-397B"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_1.webp",
+    "w": 640,
+    "h": 640,
+    "label": "(b) GPT-5.2: final view"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_1_truth.webp",
+    "w": 640,
+    "h": 640,
+    "label": "(b) intended final view"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_2_annotated.webp",
+    "w": 640,
+    "h": 640,
+    "label": "(c) Opus 4.6: chosen target"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_2_truth_annotated.webp",
+    "w": 640,
+    "h": 640,
+    "label": "(c) intended target"
+   }
+  ]
+ },
+ "formula_map": {
+  "src": "assets/img/figures/formula_map.svg",
+  "w": 906,
+  "h": 463,
+  "format": "svg",
+  "alt": "World map with red arcs from New York City to San Francisco (about 4129 km; score 313) and from New York City to New Delhi (about 11755 km; score 2).",
+  "title": "Haversine Distance Visualization.",
+  "caption": "Haversine Distance Visualization. Haversine distance from New York City to San Francisco (~4129 km; score=313) and New Delhi (~11755 km; score=2).",
+  "max_width": 800
+ },
+ "camera_fov_sphere": {
+  "src": "assets/img/figures/camera_fov_sphere.png",
+  "w": 960,
+  "h": 864,
+  "format": "png",
+  "alt": "Diagram of a unit sphere with its forward hemisphere cut away. A camera at the center projects rays through a gold rectangular image plane onto a teal spherical viewport whose edges are curved; a dashed circle marks the silhouette of the full sphere.",
+  "title": "Camera field of view on the unit sphere.",
+  "caption": "Camera field of view on the unit sphere. A perspective camera at the origin projects rays through a rectangular image plane (gold) onto the unit sphere. Normalizing each ray yields the spherical viewport (teal), the footprint of a single view in the coverage measure, whose curved boundary is set by the camera field of view rather than by a latitude–longitude rectangle. The default h = 90° horizontal field of view and 16:9 aspect ratio give v ≈ 58.72° vertically. The cutaway removes the forward hemisphere to expose the observer and viewing pyramid; the dashed silhouette marks the full sphere.",
+  "max_width": 480
+ },
+ "fm_object_permanence": {
+  "src": "assets/img/figures/panel_fm_3.webp",
+  "w": 640,
+  "h": 640,
+  "format": "webp",
+  "alt": "Final view of Qwen3.5-122B-A10B: a street of shops and parked cars with red lanterns strung overhead.",
+  "title": "FM2 (navigational reasoning failure) example: lack of object permanence.",
+  "caption": "FM2 (navigational reasoning failure) example: lack of object permanence. Final view of Qwen3.5-122B-A10B for a Navigation Challenge prompt. The model miscounts the lanterns hanging just above and ignores the lanterns it passed on the way to this viewpoint.",
+  "max_width": 480,
+  "credit": "Imagery: Google Street View",
+  "mode": "FM2",
+  "model": "Qwen3.5-122B-A10B",
+  "task": "navigation_challenge",
+  "prompt": "How many red lanterns are hanging along the next block south on Grant Avenue?",
+  "transcript": [
+   {
+    "field": "Navigation",
+    "text": "move_south x6"
+   },
+   {
+    "field": "Response",
+    "text": "6"
+   },
+   {
+    "field": "Reasoning",
+    "text": "I moved south along Grant Avenue and captured the view of the next block. I counted 6 red lanterns hanging directly above the street on a wire/string, which are the street lanterns and not part of any store decorations."
+   }
+  ]
+ },
+ "fm_route_planning": {
+  "src": "assets/img/figures/panel_fm_4.webp",
+  "w": 640,
+  "h": 640,
+  "format": "webp",
+  "alt": "Intermediate view of Qwen3.5-397B-A17B: a road with snowbanks and pine trees under a clear sky, with a crosswalk ahead and a blue sign at the roadside.",
+  "title": "FM2 (navigational reasoning failure) example: poor route planning.",
+  "caption": "FM2 (navigational reasoning failure) example: poor route planning. Intermediate view of Qwen3.5-397B-A17B for a Place Naming prompt. The agent overlooks the blue signage and crosswalks, which suggest that a street sign is nearby.",
+  "max_width": 480,
+  "credit": "Imagery: Google Street View",
+  "mode": "FM2",
+  "model": "Qwen3.5-397B-A17B",
+  "task": "place_naming",
+  "prompt": "What street are we on?",
+  "transcript": [
+   {
+    "field": "Response",
+    "text": "I do not know"
+   },
+   {
+    "field": "Reasoning",
+    "text": "I have navigated through the area...but I cannot see any street signs or clear identifiers that would reveal the street name. The images show a road with double yellow lines, snow-covered ground, pine trees on one side, and buildings on the other, with mountains in the distance, but no visible street name signage."
+   }
+  ]
+ },
+ "fm_landmark_hallucination": {
+  "src": "assets/img/figures/fm_landmark_hallucination.webp",
+  "w": 1400,
+  "h": 746,
+  "format": "webp",
+  "alt": "Two Street View panels. Left, GPT-5.2's final view: a wide multi-lane road with palm trees, billboards and an overhead sign gantry. Right, the intended final view: a street sign reading S Paradise Rd 4500 beside a traffic light.",
+  "title": "FM1 (vision failure) example: hallucinated landmark recognition.",
+  "caption": "FM1 (vision failure) example: hallucinated landmark recognition. Final view of GPT-5.2 and the intended final view for a Place Naming prompt. Instead of exploring further and grounding its answer in concrete features of the scene, the agent infers its location from sparse evidence and pretrained knowledge.",
+  "max_width": 700,
+  "credit": "Imagery: Google Street View",
+  "panels": [
+   {
+    "src": "assets/img/figures/panel_fm_1.webp",
+    "w": 640,
+    "h": 640,
+    "label": "Model Final View"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_1_truth.webp",
+    "w": 640,
+    "h": 640,
+    "label": "Intended Final View"
+   }
+  ],
+  "mode": "FM1",
+  "model": "GPT-5.2",
+  "task": "place_naming",
+  "prompt": "What street are we on?",
+  "transcript": [
+   {
+    "field": "Response",
+    "text": "Las Vegas Boulevard South"
+   },
+   {
+    "field": "Reasoning",
+    "text": "The skyline and roadside businesses indicate the Las Vegas Strip area, and the corridor shown matches Las Vegas Boulevard South."
+   }
+  ]
+ },
+ "fm_distractor": {
+  "src": "assets/img/figures/fm_distractor.webp",
+  "w": 1400,
+  "h": 746,
+  "format": "webp",
+  "alt": "Two Street View panels. Left, the intended target: a three-story apartment building outlined in green. Right, the target Claude Opus 4.6 chose: the back of a house with a gabled roof outlined in red, with two boxes labeled Patio 1 and Patio 2.",
+  "title": "FM1 (vision failure) example: fixation on a distractor.",
+  "caption": "FM1 (vision failure) example: fixation on a distractor. Intended target and the target chosen by Claude Opus 4.6 for a Navigation Challenge prompt. The model fixates on the house with a gabled roof.",
+  "max_width": 700,
+  "credit": "Imagery: Google Street View",
+  "panels": [
+   {
+    "src": "assets/img/figures/panel_fm_2_truth_annotated.webp",
+    "w": 640,
+    "h": 640,
+    "label": "Intended Target"
+   },
+   {
+    "src": "assets/img/figures/panel_fm_2_annotated.webp",
+    "w": 640,
+    "h": 640,
+    "label": "Model Target"
+   }
+  ],
+  "mode": "FM1",
+  "model": "Claude Opus 4.6",
+  "task": "navigation_challenge",
+  "prompt": "You are in the back parking lot of an apartment building. How many distinct, third floor patios does this building have?",
+  "transcript": []
+ }
+}

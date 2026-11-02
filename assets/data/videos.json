@@ -1,0 +1,54 @@
+{
+ "hero": {
+  "mp4": "assets/video/hero.mp4",
+  "poster": "assets/video/hero.jpg",
+  "duration": 85.7,
+  "width": 1280,
+  "height": 720,
+  "chapters": [
+   {
+    "id": "type1-tepoztlan",
+    "label": "Precise Localization",
+    "start": 0.0
+   },
+   {
+    "id": "type2-kenya",
+    "label": "Place Naming",
+    "start": 28.95
+   },
+   {
+    "id": "type3-flag",
+    "label": "Navigation Challenge",
+    "start": 58.27
+   }
+  ]
+ },
+ "type1-tepoztlan": {
+  "mp4": "assets/video/type1-tepoztlan.mp4",
+  "poster": "assets/video/type1-tepoztlan.jpg",
+  "duration": 34.4,
+  "width": 1280,
+  "height": 720
+ },
+ "type2-kenya": {
+  "mp4": "assets/video/type2-kenya.mp4",
+  "poster": "assets/video/type2-kenya.jpg",
+  "duration": 34.83,
+  "width": 1280,
+  "height": 720
+ },
+ "type3-flag": {
+  "mp4": "assets/video/type3-flag.mp4",
+  "poster": "assets/video/type3-flag.jpg",
+  "duration": 33.1,
+  "width": 1280,
+  "height": 720
+ },
+ "env-walkthrough": {
+  "mp4": "assets/video/env-walkthrough.mp4",
+  "poster": "assets/video/env-walkthrough.jpg",
+  "duration": 63.6,
+  "width": 1280,
+  "height": 720
+ }
+}

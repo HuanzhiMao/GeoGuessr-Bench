@@ -1,0 +1,2737 @@
+window.GEOBENCH = window.GEOBENCH || {};
+window.GEOBENCH.leaderboard = {
+ "meta": {
+  "title": "GeoGuesser Bench",
+  "titles": {
+   "main": "Results on GeoGuesser Bench",
+   "ablations": "Ablation results across all conditions",
+   "steps": "Average steps per episode (mean \u00b1 standard deviation)",
+   "zero": "Precise Localization score distribution and failure causes",
+   "movement": "Average movement calls per episode",
+   "answered": "Score on answered episodes",
+   "granularity": "Place Naming accuracy by question granularity",
+   "failure_modes": "Taxonomy of observed failure modes",
+   "fm_by_task": "Failure modes by task",
+   "fm_by_model": "Failure modes by model",
+   "compressor": "Planner tokens and task results with and without Compressor"
+  },
+  "counts": {
+   "competition": 42,
+   "synthetic": 80,
+   "place_naming": 80,
+   "navigation": 80,
+   "total": 282
+  },
+  "step_budget": 40,
+  "score_max": 5000,
+  "score_formula": {
+   "D_km": 14916.862,
+   "text": "S(d) = 5000 exp(-10 d / D); score-equivalent distance = -(D/10) ln(mean score / 5000)"
+  },
+  "evaluation": "We evaluate the 23 VLMs through their function-calling interfaces with identical prompts, tools, and budget.",
+  "digits": {
+   "steps": 1,
+   "zero": 0,
+   "movement": 2,
+   "answered": {
+    "value": 1,
+    "km": 1,
+    "zero_rate": 2
+   },
+   "ablations": 0,
+   "retention": 4
+  },
+  "notes": {
+   "main": "Mean GeoGuessr score over all entries, with invalid responses scored 0, and the score-equivalent distance in km. Bold marks the best model in each column.",
+   "ablations": "Mean GeoGuessr score (0\u20135000) per model on the two Precise Localization splits, Competition (C, n=42) and Synthetic (S, n=80), with invalid responses assigned zero. 80 Steps: step limit raised from 40 to 80, navigation enabled. No Movement: move_* tools removed, look-and-zoom only, 40 steps. Top/Bottom Half: only the named half of each 1920\u00d71080 capture retained, 40 steps, navigation enabled. Web Search: search_engine_query and fetch_url_content added, full images, 40 steps. Models are sorted by average rank over the ten columns; best value per column in bold. GPT-5.5's Web Search cell on Synthetic averages 79 entries because one question was not attempted (1809 if it is counted as zero). Claude Opus 4.6's Top Half, Bottom Half, and Web Search runs used OpenRouter; its other runs used the provider's API.",
+   "steps": "Steps are tool-call rounds plus the final answer, over completed episodes only; episodes that ended in an API error are excluded.",
+   "zero": "Step limit: the episode ended at the 40-step limit, with no answer in the final turn. The remaining zeros are API errors or episodes without a final reply.",
+   "movement": "Mean number of move_* tool calls per episode for the four strongest models by mean Precise Localization score (Competition and Synthetic), by task type. Counts are over completed episodes only.",
+   "answered": "Mean GeoGuessr score | distance in km over episodes with a non-zero score on the two Precise Localization splits, Competition (n=42) and Synthetic (n=80), and the percentage of episodes that score zero, pooled over both (n=122). Zero scores come from abstentions, episodes that end at the step limit, and errors. Bold marks the highest score and the lowest zero-score rate.",
+   "granularity": "Accuracy (%) of the five strongest models on Place Naming, by the geographic granularity the question asks for. Bold: best per granularity.",
+   "failure_modes": "Each mode represents a distinct category of error exhibited by visual agents during geospatial reasoning tasks.",
+   "fm_by_task": "Share of failed episodes with each mode, pooled over the four annotated models; an episode can have several modes. Bold: most common.",
+   "fm_by_model": "Failed episodes assigned each mode, pooled over the four task splits; n is the number of failed episodes, and an episode can have several modes.",
+   "compressor": "M denotes millions of tokens; reductions are computed from the displayed counts. Precise Localization reports the GeoGuessr score (the mean distance error falls from 166.89 km to 89.56 km with Compressor); Place Naming and Navigation Challenge report accuracy."
+  }
+ },
+ "columns": [
+  {
+   "key": "competition",
+   "label": "Competition",
+   "group": "Precise Localization",
+   "unit": "score",
+   "max": 5000,
+   "n": 42,
+   "digits": {
+    "km": 1,
+    "se": 0,
+    "value": 1
+   }
+  },
+  {
+   "key": "synthetic",
+   "label": "Synthetic",
+   "group": "Precise Localization",
+   "unit": "score",
+   "max": 5000,
+   "n": 80,
+   "digits": {
+    "km": 1,
+    "se": 0,
+    "value": 1
+   }
+  },
+  {
+   "key": "place_naming",
+   "label": "Place Naming",
+   "group": "Place Naming",
+   "unit": "pct",
+   "max": 100,
+   "n": 80,
+   "digits": {
+    "se": 1,
+    "value": 2
+   }
+  },
+  {
+   "key": "navigation",
+   "label": "Navigation Challenge",
+   "group": "Navigation Challenge",
+   "unit": "pct",
+   "max": 100,
+   "n": 80,
+   "digits": {
+    "se": 1,
+    "value": 2
+   }
+  }
+ ],
+ "human": {
+  "name": "Human experts",
+  "note": "The better player's guess in each Competition round: a reference point, not a matched comparison, since players had one minute per round and an interactive map.",
+  "provenance": "The 42 Competition locations are rounds from the Grand Finals of the GeoGuessr World Cup in 2023 and 2024 (renamed the GeoGuessr World Championship in 2025).",
+  "competition": {
+   "value": 4770.3,
+   "km": 70.2
+  },
+  "synthetic": null,
+  "place_naming": null,
+  "navigation": null
+ },
+ "models": [
+  {
+   "id": "claude-opus-4-8",
+   "name": "Claude Opus 4.8",
+   "provider": "Anthropic",
+   "paper_order": 1,
+   "avg_rank": 3.125,
+   "ranks": {
+    "competition": 1.0,
+    "synthetic": 1.0,
+    "place_naming": 3.5,
+    "navigation": 7.0
+   },
+   "main": {
+    "competition": {
+     "value": 4352.4,
+     "se": 128,
+     "km": 206.9
+    },
+    "synthetic": {
+     "value": 4549.5,
+     "se": 83,
+     "km": 140.8
+    },
+    "place_naming": {
+     "value": 60.0,
+     "se": 3.6,
+     "correct": 48
+    },
+    "navigation": {
+     "value": 26.25,
+     "se": 3.3,
+     "correct": 21
+    }
+   },
+   "best": [
+    "competition",
+    "synthetic"
+   ],
+   "steps": {
+    "competition": {
+     "mean": 12.8,
+     "sd": 8.9
+    },
+    "synthetic": {
+     "mean": 9.7,
+     "sd": 7.9
+    },
+    "place_naming": {
+     "mean": 11.6,
+     "sd": 11.3
+    },
+    "navigation": {
+     "mean": 27.0,
+     "sd": 13.2
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4923,
+     "zero": 2,
+     "step": 2,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4984,
+     "zero": 2,
+     "step": 2,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 4,
+     "navigation": 27
+    }
+   },
+   "movement": {
+    "competition": 3.07,
+    "synthetic": 2.33,
+    "place_naming": 3.15,
+    "navigation": 8.68
+   },
+   "ablations": {
+    "steps80": {
+     "c": 4594,
+     "s": 4805
+    },
+    "no_move": {
+     "c": 4646,
+     "s": 4556
+    },
+    "top_half": {
+     "c": 4368,
+     "s": 4386
+    },
+    "bottom_half": {
+     "c": 4369,
+     "s": 4313
+    },
+    "web_search": {
+     "c": 4551,
+     "s": 4380
+    }
+   },
+   "retention": 0.9799,
+   "answered": {
+    "competition": {
+     "value": 4570.0,
+     "km": 134.1
+    },
+    "synthetic": {
+     "value": 4666.2,
+     "km": 103.1
+    },
+    "zero_rate": 3.28
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "claude-opus-4-7",
+   "name": "Claude Opus 4.7",
+   "provider": "Anthropic",
+   "paper_order": 2,
+   "avg_rank": 3.375,
+   "ranks": {
+    "competition": 2.0,
+    "synthetic": 2.0,
+    "place_naming": 5.0,
+    "navigation": 4.5
+   },
+   "main": {
+    "competition": {
+     "value": 4306.4,
+     "se": 146,
+     "km": 222.8
+    },
+    "synthetic": {
+     "value": 4501.4,
+     "se": 96,
+     "km": 156.7
+    },
+    "place_naming": {
+     "value": 56.25,
+     "se": 3.6,
+     "correct": 45
+    },
+    "navigation": {
+     "value": 31.25,
+     "se": 3.4,
+     "correct": 25
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 11.8,
+     "sd": 8.0
+    },
+    "synthetic": {
+     "mean": 9.8,
+     "sd": 9.0
+    },
+    "place_naming": {
+     "mean": 14.7,
+     "sd": 13.4
+    },
+    "navigation": {
+     "mean": 25.1,
+     "sd": 12.3
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4949,
+     "zero": 4,
+     "step": 1,
+     "abst": 3
+    },
+    "synthetic": {
+     "median": 4988,
+     "zero": 4,
+     "step": 2,
+     "abst": 2
+    },
+    "step_limit": {
+     "place_naming": 9,
+     "navigation": 17
+    }
+   },
+   "movement": {
+    "competition": 2.43,
+    "synthetic": 2.34,
+    "place_naming": 7.44,
+    "navigation": 9.28
+   },
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4759.7,
+     "km": 73.5
+    },
+    "synthetic": {
+     "value": 4738.3,
+     "km": 80.2
+    },
+    "zero_rate": 6.56
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gpt-5-5",
+   "name": "GPT-5.5",
+   "provider": "OpenAI",
+   "paper_order": 3,
+   "avg_rank": 3.875,
+   "ranks": {
+    "competition": 5.0,
+    "synthetic": 6.0,
+    "place_naming": 1.5,
+    "navigation": 3.0
+   },
+   "main": {
+    "competition": {
+     "value": 3815.1,
+     "se": 182,
+     "km": 403.5
+    },
+    "synthetic": {
+     "value": 3467.8,
+     "se": 161,
+     "km": 545.8
+    },
+    "place_naming": {
+     "value": 62.5,
+     "se": 3.5,
+     "correct": 50
+    },
+    "navigation": {
+     "value": 32.5,
+     "se": 3.4,
+     "correct": 26
+    }
+   },
+   "best": [
+    "place_naming"
+   ],
+   "steps": {
+    "competition": {
+     "mean": 30.0,
+     "sd": 8.8
+    },
+    "synthetic": {
+     "mean": 27.2,
+     "sd": 11.1
+    },
+    "place_naming": {
+     "mean": 17.4,
+     "sd": 12.2
+    },
+    "navigation": {
+     "mean": 24.9,
+     "sd": 10.2
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4763,
+     "zero": 7,
+     "step": 7,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4968,
+     "zero": 18,
+     "step": 18,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 7,
+     "navigation": 10
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 4407,
+     "s": 4391
+    },
+    "no_move": {
+     "c": 4100,
+     "s": 4178
+    },
+    "top_half": {
+     "c": 2212,
+     "s": 2305
+    },
+    "bottom_half": {
+     "c": 1403,
+     "s": 1553
+    },
+    "web_search": {
+     "c": 2388,
+     "s": 1832
+    }
+   },
+   "retention": 0.515,
+   "answered": {
+    "competition": {
+     "value": 4578.1,
+     "km": 131.5
+    },
+    "synthetic": {
+     "value": 4474.6,
+     "km": 165.6
+    },
+    "zero_rate": 20.49
+   },
+   "ablation_notes": [
+    {
+     "key": "web_search",
+     "split": "s",
+     "text": "Web Search Synthetic cell averages 79 entries because one question was not attempted (1809 if it is counted as zero).",
+     "n": 79,
+     "if_zero": 1809
+    }
+   ]
+  },
+  {
+   "id": "claude-fable-5",
+   "name": "Claude Fable 5",
+   "provider": "Anthropic",
+   "paper_order": 4,
+   "avg_rank": 5.5,
+   "ranks": {
+    "competition": 11.0,
+    "synthetic": 8.0,
+    "place_naming": 1.5,
+    "navigation": 1.5
+   },
+   "main": {
+    "competition": {
+     "value": 2821.1,
+     "se": 248,
+     "km": 853.7
+    },
+    "synthetic": {
+     "value": 3164.2,
+     "se": 175,
+     "km": 682.5
+    },
+    "place_naming": {
+     "value": 62.5,
+     "se": 3.5,
+     "correct": 50
+    },
+    "navigation": {
+     "value": 35.0,
+     "se": 3.5,
+     "correct": 28
+    }
+   },
+   "best": [
+    "place_naming",
+    "navigation"
+   ],
+   "steps": {
+    "competition": {
+     "mean": 29.1,
+     "sd": 12.5
+    },
+    "synthetic": {
+     "mean": 23.9,
+     "sd": 15.3
+    },
+    "place_naming": {
+     "mean": 20.0,
+     "sd": 16.0
+    },
+    "navigation": {
+     "mean": 31.1,
+     "sd": 11.1
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4872,
+     "zero": 18,
+     "step": 15,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4994,
+     "zero": 29,
+     "step": 28,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 22,
+     "navigation": 28
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4937.0,
+     "km": 18.9
+    },
+    "synthetic": {
+     "value": 4963.4,
+     "km": 11.0
+    },
+    "zero_rate": 38.52
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "qwen3-7-plus",
+   "name": "Qwen3.7-Plus",
+   "provider": "Alibaba (Qwen)",
+   "paper_order": 5,
+   "avg_rank": 7.375,
+   "ranks": {
+    "competition": 3.0,
+    "synthetic": 4.0,
+    "place_naming": 14.5,
+    "navigation": 8.0
+   },
+   "main": {
+    "competition": {
+     "value": 3964.4,
+     "se": 133,
+     "km": 346.2
+    },
+    "synthetic": {
+     "value": 3996.0,
+     "se": 104,
+     "km": 334.4
+    },
+    "place_naming": {
+     "value": 42.5,
+     "se": 3.6,
+     "correct": 34
+    },
+    "navigation": {
+     "value": 23.75,
+     "se": 3.1,
+     "correct": 19
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 12.6,
+     "sd": 4.3
+    },
+    "synthetic": {
+     "mean": 11.2,
+     "sd": 5.2
+    },
+    "place_naming": {
+     "mean": 9.8,
+     "sd": 8.8
+    },
+    "navigation": {
+     "mean": 20.3,
+     "sd": 13.8
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4411,
+     "zero": 2,
+     "step": 0,
+     "abst": 1
+    },
+    "synthetic": {
+     "median": 4608,
+     "zero": 1,
+     "step": 0,
+     "abst": 1
+    },
+    "step_limit": {
+     "place_naming": 3,
+     "navigation": 17
+    }
+   },
+   "movement": {
+    "competition": 2.9,
+    "synthetic": 2.58,
+    "place_naming": 2.17,
+    "navigation": 8.17
+   },
+   "ablations": {
+    "steps80": {
+     "c": 3884,
+     "s": 3930
+    },
+    "no_move": {
+     "c": 3686,
+     "s": 3998
+    },
+    "top_half": {
+     "c": 2925,
+     "s": 3171
+    },
+    "bottom_half": {
+     "c": 3271,
+     "s": 3097
+    },
+    "web_search": {
+     "c": 3080,
+     "s": 3339
+    }
+   },
+   "retention": 0.7829,
+   "answered": {
+    "competition": {
+     "value": 4162.6,
+     "km": 273.4
+    },
+    "synthetic": {
+     "value": 4046.5,
+     "km": 315.6
+    },
+    "zero_rate": 2.46
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gpt-5-4-pro",
+   "name": "GPT-5.4 Pro",
+   "provider": "OpenAI",
+   "paper_order": 6,
+   "avg_rank": 7.75,
+   "ranks": {
+    "competition": 13.0,
+    "synthetic": 13.0,
+    "place_naming": 3.5,
+    "navigation": 1.5
+   },
+   "main": {
+    "competition": {
+     "value": 2503.8,
+     "se": 244,
+     "km": 1031.7
+    },
+    "synthetic": {
+     "value": 2667.4,
+     "se": 176,
+     "km": 937.3
+    },
+    "place_naming": {
+     "value": 60.0,
+     "se": 3.6,
+     "correct": 48
+    },
+    "navigation": {
+     "value": 35.0,
+     "se": 3.5,
+     "correct": 28
+    }
+   },
+   "best": [
+    "navigation"
+   ],
+   "steps": {
+    "competition": {
+     "mean": 35.7,
+     "sd": 7.2
+    },
+    "synthetic": {
+     "mean": 33.2,
+     "sd": 9.3
+    },
+    "place_naming": {
+     "mean": 23.4,
+     "sd": 12.2
+    },
+    "navigation": {
+     "mean": 25.8,
+     "sd": 10.3
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 3662,
+     "zero": 20,
+     "step": 20,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 3988,
+     "zero": 35,
+     "step": 35,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 11,
+     "navigation": 10
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4780.0,
+     "km": 67.1
+    },
+    "synthetic": {
+     "value": 4742.0,
+     "km": 79.0
+    },
+    "zero_rate": 45.08
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gpt-5-4",
+   "name": "GPT-5.4",
+   "provider": "OpenAI",
+   "paper_order": 7,
+   "avg_rank": 8.0,
+   "ranks": {
+    "competition": 4.0,
+    "synthetic": 3.0,
+    "place_naming": 6.5,
+    "navigation": 18.5
+   },
+   "main": {
+    "competition": {
+     "value": 3923.1,
+     "se": 122,
+     "km": 361.8
+    },
+    "synthetic": {
+     "value": 4221.1,
+     "se": 85,
+     "km": 252.6
+    },
+    "place_naming": {
+     "value": 50.0,
+     "se": 3.6,
+     "correct": 40
+    },
+    "navigation": {
+     "value": 12.5,
+     "se": 2.4,
+     "correct": 10
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 10.8,
+     "sd": 2.7
+    },
+    "synthetic": {
+     "mean": 10.1,
+     "sd": 3.0
+    },
+    "place_naming": {
+     "mean": 7.2,
+     "sd": 3.5
+    },
+    "navigation": {
+     "mean": 10.7,
+     "sd": 8.1
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4209,
+     "zero": 1,
+     "step": 0,
+     "abst": 1
+    },
+    "synthetic": {
+     "median": 4871,
+     "zero": 0,
+     "step": 0,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 1
+    }
+   },
+   "movement": {
+    "competition": 2.83,
+    "synthetic": 2.48,
+    "place_naming": 1.74,
+    "navigation": 3.3
+   },
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4018.8,
+     "km": 325.9
+    },
+    "synthetic": {
+     "value": 4221.1,
+     "km": 252.6
+    },
+    "zero_rate": 0.82
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "glm-5v-turbo",
+   "name": "GLM-5V-Turbo",
+   "provider": "Zhipu AI",
+   "paper_order": 8,
+   "avg_rank": 9.375,
+   "ranks": {
+    "competition": 6.0,
+    "synthetic": 5.0,
+    "place_naming": 11.5,
+    "navigation": 15.0
+   },
+   "main": {
+    "competition": {
+     "value": 3138.2,
+     "se": 200,
+     "km": 694.8
+    },
+    "synthetic": {
+     "value": 3859.8,
+     "se": 131,
+     "km": 386.1
+    },
+    "place_naming": {
+     "value": 46.25,
+     "se": 3.6,
+     "correct": 37
+    },
+    "navigation": {
+     "value": 15.0,
+     "se": 2.6,
+     "correct": 12
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 22.0,
+     "sd": 11.0
+    },
+    "synthetic": {
+     "mean": 18.5,
+     "sd": 9.0
+    },
+    "place_naming": {
+     "mean": 16.4,
+     "sd": 12.0
+    },
+    "navigation": {
+     "mean": 22.3,
+     "sd": 13.3
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4091,
+     "zero": 11,
+     "step": 6,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4892,
+     "zero": 8,
+     "step": 3,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 7,
+     "navigation": 16
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 3520,
+     "s": 4089
+    },
+    "no_move": {
+     "c": 4249,
+     "s": 4356
+    },
+    "top_half": {
+     "c": 3061,
+     "s": 3960
+    },
+    "bottom_half": {
+     "c": 3093,
+     "s": 3480
+    },
+    "web_search": {
+     "c": 3544,
+     "s": 4022
+    }
+   },
+   "retention": 0.9721,
+   "answered": {
+    "competition": {
+     "value": 4251.8,
+     "km": 241.8
+    },
+    "synthetic": {
+     "value": 4288.7,
+     "km": 228.9
+    },
+    "zero_rate": 15.57
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "claude-opus-4-6",
+   "name": "Claude Opus 4.6",
+   "provider": "Anthropic",
+   "paper_order": 9,
+   "avg_rank": 9.625,
+   "ranks": {
+    "competition": 9.0,
+    "synthetic": 7.0,
+    "place_naming": 13.0,
+    "navigation": 9.5
+   },
+   "main": {
+    "competition": {
+     "value": 3023.9,
+     "se": 231,
+     "km": 750.2
+    },
+    "synthetic": {
+     "value": 3363.5,
+     "se": 165,
+     "km": 591.4
+    },
+    "place_naming": {
+     "value": 45.0,
+     "se": 3.6,
+     "correct": 36
+    },
+    "navigation": {
+     "value": 18.75,
+     "se": 2.9,
+     "correct": 15
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 24.4,
+     "sd": 12.5
+    },
+    "synthetic": {
+     "mean": 24.5,
+     "sd": 14.5
+    },
+    "place_naming": {
+     "mean": 24.8,
+     "sd": 15.3
+    },
+    "navigation": {
+     "mean": 33.5,
+     "sd": 10.7
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4416,
+     "zero": 14,
+     "step": 9,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4978,
+     "zero": 22,
+     "step": 21,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 24,
+     "navigation": 37
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 3708,
+     "s": 3741
+    },
+    "no_move": {
+     "c": 3749,
+     "s": 3018
+    },
+    "top_half": {
+     "c": 2527,
+     "s": 2583
+    },
+    "bottom_half": {
+     "c": 1928,
+     "s": 2879
+    },
+    "web_search": {
+     "c": 2688,
+     "s": 3069
+    }
+   },
+   "retention": 0.7743,
+   "answered": {
+    "competition": {
+     "value": 4535.9,
+     "km": 145.3
+    },
+    "synthetic": {
+     "value": 4639.3,
+     "km": 111.7
+    },
+    "zero_rate": 29.51
+   },
+   "ablation_notes": [
+    {
+     "key": "top_half",
+     "split": null,
+     "text": "Top Half run used OpenRouter; the other runs of this model used the provider's API."
+    },
+    {
+     "key": "bottom_half",
+     "split": null,
+     "text": "Bottom Half run used OpenRouter; the other runs of this model used the provider's API."
+    },
+    {
+     "key": "web_search",
+     "split": null,
+     "text": "Web Search run used OpenRouter; the other runs of this model used the provider's API."
+    }
+   ]
+  },
+  {
+   "id": "minimax-m3",
+   "name": "MiniMax-M3",
+   "provider": "MiniMax",
+   "paper_order": 10,
+   "avg_rank": 11.875,
+   "ranks": {
+    "competition": 7.0,
+    "synthetic": 10.0,
+    "place_naming": 18.5,
+    "navigation": 12.0
+   },
+   "main": {
+    "competition": {
+     "value": 3061.5,
+     "se": 205,
+     "km": 731.7
+    },
+    "synthetic": {
+     "value": 2905.8,
+     "se": 159,
+     "km": 809.6
+    },
+    "place_naming": {
+     "value": 33.75,
+     "se": 3.4,
+     "correct": 27
+    },
+    "navigation": {
+     "value": 17.5,
+     "se": 2.8,
+     "correct": 14
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 13.9,
+     "sd": 11.3
+    },
+    "synthetic": {
+     "mean": 11.6,
+     "sd": 8.6
+    },
+    "place_naming": {
+     "mean": 7.8,
+     "sd": 9.7
+    },
+    "navigation": {
+     "mean": 25.2,
+     "sd": 14.9
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4138,
+     "zero": 12,
+     "step": 4,
+     "abst": 6
+    },
+    "synthetic": {
+     "median": 4119,
+     "zero": 23,
+     "step": 1,
+     "abst": 11
+    },
+    "step_limit": {
+     "place_naming": 3,
+     "navigation": 24
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4286.2,
+     "km": 229.8
+    },
+    "synthetic": {
+     "value": 4078.3,
+     "km": 303.9
+    },
+    "zero_rate": 28.69
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "qwen3-6-plus",
+   "name": "Qwen3.6-Plus",
+   "provider": "Alibaba (Qwen)",
+   "paper_order": 11,
+   "avg_rank": 12.25,
+   "ranks": {
+    "competition": 8.0,
+    "synthetic": 9.0,
+    "place_naming": 17.0,
+    "navigation": 15.0
+   },
+   "main": {
+    "competition": {
+     "value": 3045.5,
+     "se": 173,
+     "km": 739.5
+    },
+    "synthetic": {
+     "value": 2956.4,
+     "se": 141,
+     "km": 783.8
+    },
+    "place_naming": {
+     "value": 36.25,
+     "se": 3.5,
+     "correct": 29
+    },
+    "navigation": {
+     "value": 15.0,
+     "se": 2.6,
+     "correct": 12
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 4.0,
+     "sd": 3.6
+    },
+    "synthetic": {
+     "mean": 4.1,
+     "sd": 3.8
+    },
+    "place_naming": {
+     "mean": 3.6,
+     "sd": 3.1
+    },
+    "navigation": {
+     "mean": 16.6,
+     "sd": 14.4
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 3691,
+     "zero": 6,
+     "step": 0,
+     "abst": 6
+    },
+    "synthetic": {
+     "median": 3481,
+     "zero": 6,
+     "step": 0,
+     "abst": 3
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 13
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 3553.1,
+     "km": 509.6
+    },
+    "synthetic": {
+     "value": 3196.1,
+     "km": 667.5
+    },
+    "zero_rate": 9.84
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gpt-5-5-pro",
+   "name": "GPT-5.5 Pro",
+   "provider": "OpenAI",
+   "paper_order": 12,
+   "avg_rank": 12.375,
+   "ranks": {
+    "competition": 18.0,
+    "synthetic": 18.0,
+    "place_naming": 9.0,
+    "navigation": 4.5
+   },
+   "main": {
+    "competition": {
+     "value": 1163.4,
+     "se": 211,
+     "km": 2175.0
+    },
+    "synthetic": {
+     "value": 1556.1,
+     "se": 168,
+     "km": 1741.2
+    },
+    "place_naming": {
+     "value": 47.5,
+     "se": 3.6,
+     "correct": 38
+    },
+    "navigation": {
+     "value": 31.25,
+     "se": 3.4,
+     "correct": 25
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 38.3,
+     "sd": 6.0
+    },
+    "synthetic": {
+     "mean": 36.0,
+     "sd": 8.3
+    },
+    "place_naming": {
+     "mean": 24.6,
+     "sd": 15.6
+    },
+    "navigation": {
+     "mean": 30.0,
+     "sd": 11.4
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 32,
+     "step": 32,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 53,
+     "step": 53,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 27,
+     "navigation": 30
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4886.3,
+     "km": 34.3
+    },
+    "synthetic": {
+     "value": 4610.7,
+     "km": 120.9
+    },
+    "zero_rate": 69.67
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gemini-3-flash",
+   "name": "Gemini 3 Flash",
+   "provider": "Google",
+   "paper_order": 13,
+   "avg_rank": 12.375,
+   "ranks": {
+    "competition": 10.0,
+    "synthetic": 14.0,
+    "place_naming": 16.0,
+    "navigation": 9.5
+   },
+   "main": {
+    "competition": {
+     "value": 2851.0,
+     "se": 240,
+     "km": 838.0
+    },
+    "synthetic": {
+     "value": 2493.3,
+     "se": 183,
+     "km": 1038.0
+    },
+    "place_naming": {
+     "value": 38.75,
+     "se": 3.6,
+     "correct": 31
+    },
+    "navigation": {
+     "value": 18.75,
+     "se": 2.9,
+     "correct": 15
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 28.3,
+     "sd": 13.1
+    },
+    "synthetic": {
+     "mean": 28.7,
+     "sd": 14.0
+    },
+    "place_naming": {
+     "mean": 31.4,
+     "sd": 13.2
+    },
+    "navigation": {
+     "mean": 36.4,
+     "sd": 8.9
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4400,
+     "zero": 17,
+     "step": 17,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 2420,
+     "zero": 39,
+     "step": 39,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 47,
+     "navigation": 56
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 4789.6,
+     "km": 64.1
+    },
+    "synthetic": {
+     "value": 4864.9,
+     "km": 40.9
+    },
+    "zero_rate": 45.9
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "claude-sonnet-4-6",
+   "name": "Claude Sonnet 4.6",
+   "provider": "Anthropic",
+   "paper_order": 14,
+   "avg_rank": 12.625,
+   "ranks": {
+    "competition": 12.0,
+    "synthetic": 11.0,
+    "place_naming": 9.0,
+    "navigation": 18.5
+   },
+   "main": {
+    "competition": {
+     "value": 2649.1,
+     "se": 245,
+     "km": 947.5
+    },
+    "synthetic": {
+     "value": 2883.8,
+     "se": 174,
+     "km": 820.9
+    },
+    "place_naming": {
+     "value": 47.5,
+     "se": 3.6,
+     "correct": 38
+    },
+    "navigation": {
+     "value": 12.5,
+     "se": 2.4,
+     "correct": 10
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 29.4,
+     "sd": 13.1
+    },
+    "synthetic": {
+     "mean": 23.2,
+     "sd": 13.9
+    },
+    "place_naming": {
+     "mean": 24.1,
+     "sd": 15.3
+    },
+    "navigation": {
+     "mean": 34.5,
+     "sd": 10.3
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 4460,
+     "zero": 19,
+     "step": 15,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 4841,
+     "zero": 29,
+     "step": 23,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 27,
+     "navigation": 39
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 2791,
+     "s": 3193
+    },
+    "no_move": {
+     "c": 3626,
+     "s": 4203
+    },
+    "top_half": {
+     "c": 2337,
+     "s": 2922
+    },
+    "bottom_half": {
+     "c": 2446,
+     "s": 2707
+    },
+    "web_search": {
+     "c": 3206,
+     "s": 2767
+    }
+   },
+   "retention": 0.9394,
+   "answered": {
+    "competition": {
+     "value": 4837.5,
+     "km": 49.3
+    },
+    "synthetic": {
+     "value": 4523.6,
+     "km": 149.4
+    },
+    "zero_rate": 39.34
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gemini-3-5-flash",
+   "name": "Gemini 3.5 Flash",
+   "provider": "Google",
+   "paper_order": 15,
+   "avg_rank": 13.875,
+   "ranks": {
+    "competition": 16.0,
+    "synthetic": 16.0,
+    "place_naming": 11.5,
+    "navigation": 12.0
+   },
+   "main": {
+    "competition": {
+     "value": 1698.3,
+     "se": 233,
+     "km": 1610.7
+    },
+    "synthetic": {
+     "value": 2184.0,
+     "se": 180,
+     "km": 1235.5
+    },
+    "place_naming": {
+     "value": 46.25,
+     "se": 3.6,
+     "correct": 37
+    },
+    "navigation": {
+     "value": 17.5,
+     "se": 2.8,
+     "correct": 14
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 35.2,
+     "sd": 9.2
+    },
+    "synthetic": {
+     "mean": 33.7,
+     "sd": 10.8
+    },
+    "place_naming": {
+     "mean": 30.1,
+     "sd": 13.7
+    },
+    "navigation": {
+     "mean": 35.7,
+     "sd": 10.1
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 27,
+     "step": 27,
+     "abst": 0
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 44,
+     "step": 44,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 35,
+     "navigation": 53
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 2744,
+     "s": 3228
+    },
+    "no_move": {
+     "c": 3939,
+     "s": 4019
+    },
+    "top_half": {
+     "c": 948,
+     "s": 2123
+    },
+    "bottom_half": {
+     "c": 938,
+     "s": 1179
+    },
+    "web_search": {
+     "c": 0,
+     "s": 125
+    }
+   },
+   "retention": 0.6556,
+   "answered": {
+    "competition": {
+     "value": 4755.2,
+     "km": 74.9
+    },
+    "synthetic": {
+     "value": 4853.3,
+     "km": 44.4
+    },
+    "zero_rate": 58.2
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gemini-3-1-pro",
+   "name": "Gemini 3.1 Pro",
+   "provider": "Google",
+   "paper_order": 16,
+   "avg_rank": 14.0,
+   "ranks": {
+    "competition": 20.0,
+    "synthetic": 21.0,
+    "place_naming": 9.0,
+    "navigation": 6.0
+   },
+   "main": {
+    "competition": {
+     "value": 593.6,
+     "se": 164,
+     "km": 3178.8
+    },
+    "synthetic": {
+     "value": 1124.8,
+     "se": 153,
+     "km": 2225.3
+    },
+    "place_naming": {
+     "value": 47.5,
+     "se": 3.6,
+     "correct": 38
+    },
+    "navigation": {
+     "value": 30.0,
+     "se": 3.4,
+     "correct": 24
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 39.5,
+     "sd": 5.4
+    },
+    "synthetic": {
+     "mean": 37.0,
+     "sd": 8.8
+    },
+    "place_naming": {
+     "mean": 29.1,
+     "sd": 14.0
+    },
+    "navigation": {
+     "mean": 32.8,
+     "sd": 12.0
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 37,
+     "step": 35,
+     "abst": 2
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 62,
+     "step": 62,
+     "abst": 0
+    },
+    "step_limit": {
+     "place_naming": 38,
+     "navigation": 48
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 1729,
+     "s": 2473
+    },
+    "no_move": {
+     "c": 1939,
+     "s": 2532
+    },
+    "top_half": {
+     "c": 0,
+     "s": 1062
+    },
+    "bottom_half": {
+     "c": 0,
+     "s": 437
+    },
+    "web_search": {
+     "c": 119,
+     "s": 312
+    }
+   },
+   "retention": 0.3332,
+   "answered": {
+    "competition": {
+     "value": 4986.5,
+     "km": 4.0
+    },
+    "synthetic": {
+     "value": 4999.2,
+     "km": 0.2
+    },
+    "zero_rate": 81.15
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "kimi-k2-5",
+   "name": "Kimi K2.5",
+   "provider": "Moonshot AI",
+   "paper_order": 17,
+   "avg_rank": 14.125,
+   "ranks": {
+    "competition": 15.0,
+    "synthetic": 12.0,
+    "place_naming": 14.5,
+    "navigation": 15.0
+   },
+   "main": {
+    "competition": {
+     "value": 2016.2,
+     "se": 228,
+     "km": 1354.8
+    },
+    "synthetic": {
+     "value": 2717.1,
+     "se": 174,
+     "km": 909.7
+    },
+    "place_naming": {
+     "value": 42.5,
+     "se": 3.6,
+     "correct": 34
+    },
+    "navigation": {
+     "value": 15.0,
+     "se": 2.6,
+     "correct": 12
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 20.9,
+     "sd": 10.5
+    },
+    "synthetic": {
+     "mean": 21.8,
+     "sd": 10.8
+    },
+    "place_naming": {
+     "mean": 20.6,
+     "sd": 12.5
+    },
+    "navigation": {
+     "mean": 32.9,
+     "sd": 11.1
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 23,
+     "step": 1,
+     "abst": 22
+    },
+    "synthetic": {
+     "median": 4123,
+     "zero": 30,
+     "step": 5,
+     "abst": 25
+    },
+    "step_limit": {
+     "place_naming": 13,
+     "navigation": 39
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 3038,
+     "s": 3167
+    },
+    "no_move": {
+     "c": 2668,
+     "s": 3119
+    },
+    "top_half": {
+     "c": 2258,
+     "s": 2413
+    },
+    "bottom_half": {
+     "c": 718,
+     "s": 1819
+    },
+    "web_search": {
+     "c": 3999,
+     "s": 3979
+    }
+   },
+   "retention": 0.7584,
+   "answered": {
+    "competition": {
+     "value": 4456.9,
+     "km": 171.5
+    },
+    "synthetic": {
+     "value": 4347.4,
+     "km": 208.6
+    },
+    "zero_rate": 43.44
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "kimi-k2-6",
+   "name": "Kimi K2.6",
+   "provider": "Moonshot AI",
+   "paper_order": 18,
+   "avg_rank": 14.375,
+   "ranks": {
+    "competition": 17.0,
+    "synthetic": 17.0,
+    "place_naming": 6.5,
+    "navigation": 17.0
+   },
+   "main": {
+    "competition": {
+     "value": 1667.9,
+     "se": 229,
+     "km": 1637.7
+    },
+    "synthetic": {
+     "value": 2100.3,
+     "se": 177,
+     "km": 1293.8
+    },
+    "place_naming": {
+     "value": 50.0,
+     "se": 3.6,
+     "correct": 40
+    },
+    "navigation": {
+     "value": 13.75,
+     "se": 2.5,
+     "correct": 11
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 26.3,
+     "sd": 12.1
+    },
+    "synthetic": {
+     "mean": 22.3,
+     "sd": 13.2
+    },
+    "place_naming": {
+     "mean": 24.3,
+     "sd": 13.2
+    },
+    "navigation": {
+     "mean": 31.9,
+     "sd": 12.1
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 27,
+     "step": 8,
+     "abst": 19
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 43,
+     "step": 14,
+     "abst": 29
+    },
+    "step_limit": {
+     "place_naming": 18,
+     "navigation": 41
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 1218,
+     "s": 1804
+    },
+    "no_move": {
+     "c": 781,
+     "s": 2161
+    },
+    "top_half": {
+     "c": 471,
+     "s": 1599
+    },
+    "bottom_half": {
+     "c": 856,
+     "s": 1185
+    },
+    "web_search": {
+     "c": 238,
+     "s": 507
+    }
+   },
+   "retention": 0.5303,
+   "answered": {
+    "competition": {
+     "value": 4670.2,
+     "km": 101.8
+    },
+    "synthetic": {
+     "value": 4541.3,
+     "km": 143.5
+    },
+    "zero_rate": 57.38
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "qwen3-5-397b-a17b",
+   "name": "Qwen3.5-397B-A17B",
+   "provider": "Alibaba (Qwen)",
+   "paper_order": 19,
+   "avg_rank": 17.5,
+   "ranks": {
+    "competition": 14.0,
+    "synthetic": 15.0,
+    "place_naming": 21.0,
+    "navigation": 20.0
+   },
+   "main": {
+    "competition": {
+     "value": 2221.5,
+     "se": 209,
+     "km": 1210.1
+    },
+    "synthetic": {
+     "value": 2467.0,
+     "se": 160,
+     "km": 1053.8
+    },
+    "place_naming": {
+     "value": 28.75,
+     "se": 3.3,
+     "correct": 23
+    },
+    "navigation": {
+     "value": 8.75,
+     "se": 2.1,
+     "correct": 7
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 12.0,
+     "sd": 7.6
+    },
+    "synthetic": {
+     "mean": 15.4,
+     "sd": 8.0
+    },
+    "place_naming": {
+     "mean": 8.1,
+     "sd": 8.2
+    },
+    "navigation": {
+     "mean": 16.7,
+     "sd": 12.9
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 1954,
+     "zero": 14,
+     "step": 1,
+     "abst": 13
+    },
+    "synthetic": {
+     "median": 3000,
+     "zero": 25,
+     "step": 1,
+     "abst": 23
+    },
+    "step_limit": {
+     "place_naming": 1,
+     "navigation": 10
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 2175,
+     "s": 2149
+    },
+    "no_move": {
+     "c": 1661,
+     "s": 1861
+    },
+    "top_half": {
+     "c": 1871,
+     "s": 2235
+    },
+    "bottom_half": {
+     "c": 1556,
+     "s": 1147
+    },
+    "web_search": {
+     "c": 2444,
+     "s": 2662
+    }
+   },
+   "retention": 0.7284,
+   "answered": {
+    "competition": {
+     "value": 3332.2,
+     "km": 605.3
+    },
+    "synthetic": {
+     "value": 3588.3,
+     "km": 494.9
+    },
+    "zero_rate": 31.97
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "gpt-5-2",
+   "name": "GPT-5.2",
+   "provider": "OpenAI",
+   "paper_order": 20,
+   "avg_rank": 17.875,
+   "ranks": {
+    "competition": 21.0,
+    "synthetic": 20.0,
+    "place_naming": 18.5,
+    "navigation": 12.0
+   },
+   "main": {
+    "competition": {
+     "value": 523.9,
+     "se": 146,
+     "km": 3365.1
+    },
+    "synthetic": {
+     "value": 1243.2,
+     "se": 151,
+     "km": 2076.1
+    },
+    "place_naming": {
+     "value": 33.75,
+     "se": 3.4,
+     "correct": 27
+    },
+    "navigation": {
+     "value": 17.5,
+     "se": 2.8,
+     "correct": 14
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 9.9,
+     "sd": 2.9
+    },
+    "synthetic": {
+     "mean": 9.3,
+     "sd": 3.1
+    },
+    "place_naming": {
+     "mean": 9.1,
+     "sd": 5.5
+    },
+    "navigation": {
+     "mean": 12.6,
+     "sd": 9.4
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 37,
+     "step": 0,
+     "abst": 37
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 57,
+     "step": 0,
+     "abst": 57
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 2
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 767,
+     "s": 1295
+    },
+    "no_move": {
+     "c": 572,
+     "s": 1544
+    },
+    "top_half": {
+     "c": 604,
+     "s": 902
+    },
+    "bottom_half": {
+     "c": 112,
+     "s": 667
+    },
+    "web_search": {
+     "c": 1696,
+     "s": 2209
+    }
+   },
+   "retention": 0.6572,
+   "answered": {
+    "competition": {
+     "value": 4400.8,
+     "km": 190.4
+    },
+    "synthetic": {
+     "value": 4324.0,
+     "km": 216.7
+    },
+    "zero_rate": 77.05
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "grok-4-3",
+   "name": "Grok 4.3",
+   "provider": "xAI",
+   "paper_order": 21,
+   "avg_rank": 20.0,
+   "ranks": {
+    "competition": 19.0,
+    "synthetic": 19.0,
+    "place_naming": 20.0,
+    "navigation": 22.0
+   },
+   "main": {
+    "competition": {
+     "value": 805.8,
+     "se": 173,
+     "km": 2722.9
+    },
+    "synthetic": {
+     "value": 1546.8,
+     "se": 162,
+     "km": 1750.1
+    },
+    "place_naming": {
+     "value": 32.5,
+     "se": 3.4,
+     "correct": 26
+    },
+    "navigation": {
+     "value": 5.0,
+     "se": 1.6,
+     "correct": 4
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 3.3,
+     "sd": 1.4
+    },
+    "synthetic": {
+     "mean": 3.5,
+     "sd": 1.3
+    },
+    "place_naming": {
+     "mean": 3.5,
+     "sd": 1.6
+    },
+    "navigation": {
+     "mean": 4.1,
+     "sd": 3.0
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 34,
+     "step": 0,
+     "abst": 34
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 52,
+     "step": 0,
+     "abst": 52
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 0
+    }
+   },
+   "movement": null,
+   "ablations": {
+    "steps80": {
+     "c": 650,
+     "s": 1400
+    },
+    "no_move": {
+     "c": 578,
+     "s": 623
+    },
+    "top_half": {
+     "c": 407,
+     "s": 1133
+    },
+    "bottom_half": {
+     "c": 213,
+     "s": 820
+    },
+    "web_search": {
+     "c": 835,
+     "s": 1022
+    }
+   },
+   "retention": 0.508,
+   "answered": {
+    "competition": {
+     "value": 4230.7,
+     "km": 249.2
+    },
+    "synthetic": {
+     "value": 4419.3,
+     "km": 184.2
+    },
+    "zero_rate": 70.49
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "qwen3-5-122b-a10b",
+   "name": "Qwen3.5-122B-A10B",
+   "provider": "Alibaba (Qwen)",
+   "paper_order": 22,
+   "avg_rank": 22.0,
+   "ranks": {
+    "competition": 23.0,
+    "synthetic": 22.0,
+    "place_naming": 22.0,
+    "navigation": 21.0
+   },
+   "main": {
+    "competition": {
+     "value": 145.7,
+     "se": 78,
+     "km": 5274.1
+    },
+    "synthetic": {
+     "value": 807.2,
+     "se": 126,
+     "km": 2720.3
+    },
+    "place_naming": {
+     "value": 12.5,
+     "se": 2.4,
+     "correct": 10
+    },
+    "navigation": {
+     "value": 6.25,
+     "se": 1.8,
+     "correct": 5
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 3.5,
+     "sd": 2.0
+    },
+    "synthetic": {
+     "mean": 3.6,
+     "sd": 2.0
+    },
+    "place_naming": {
+     "mean": 2.5,
+     "sd": 1.1
+    },
+    "navigation": {
+     "mean": 9.6,
+     "sd": 10.5
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 40,
+     "step": 0,
+     "abst": 39
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 62,
+     "step": 0,
+     "abst": 61
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 5
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 3059.8,
+     "km": 732.5
+    },
+    "synthetic": {
+     "value": 3587.7,
+     "km": 495.1
+    },
+    "zero_rate": 83.61
+   },
+   "ablation_notes": null
+  },
+  {
+   "id": "qwen3-5-35b-a3b",
+   "name": "Qwen3.5-35B-A3B",
+   "provider": "Alibaba (Qwen)",
+   "paper_order": 23,
+   "avg_rank": 22.75,
+   "ranks": {
+    "competition": 22.0,
+    "synthetic": 23.0,
+    "place_naming": 23.0,
+    "navigation": 23.0
+   },
+   "main": {
+    "competition": {
+     "value": 252.4,
+     "se": 83,
+     "km": 4454.4
+    },
+    "synthetic": {
+     "value": 364.8,
+     "se": 89,
+     "km": 3905.0
+    },
+    "place_naming": {
+     "value": 10.0,
+     "se": 2.2,
+     "correct": 8
+    },
+    "navigation": {
+     "value": 3.75,
+     "se": 1.4,
+     "correct": 3
+    }
+   },
+   "best": [],
+   "steps": {
+    "competition": {
+     "mean": 4.2,
+     "sd": 2.1
+    },
+    "synthetic": {
+     "mean": 4.5,
+     "sd": 2.4
+    },
+    "place_naming": {
+     "mean": 6.2,
+     "sd": 5.6
+    },
+    "navigation": {
+     "mean": 8.8,
+     "sd": 7.6
+    }
+   },
+   "zero": {
+    "competition": {
+     "median": 0,
+     "zero": 37,
+     "step": 0,
+     "abst": 1
+    },
+    "synthetic": {
+     "median": 0,
+     "zero": 66,
+     "step": 0,
+     "abst": 5
+    },
+    "step_limit": {
+     "place_naming": 0,
+     "navigation": 1
+    }
+   },
+   "movement": null,
+   "ablations": null,
+   "retention": null,
+   "answered": {
+    "competition": {
+     "value": 2120.6,
+     "km": 1279.5
+    },
+    "synthetic": {
+     "value": 2084.7,
+     "km": 1304.9
+    },
+    "zero_rate": 84.43
+   },
+   "ablation_notes": null
+  }
+ ],
+ "ablation_columns": [
+  {
+   "key": "steps80",
+   "label": "80 Steps",
+   "desc": "Step limit raised from 40 to 80, navigation enabled."
+  },
+  {
+   "key": "no_move",
+   "label": "No Movement",
+   "desc": "move_* tools removed, look-and-zoom only, 40 steps."
+  },
+  {
+   "key": "top_half",
+   "label": "Top Half",
+   "desc": "Only the top half of each 1920\u00d71080 capture retained, 40 steps, navigation enabled."
+  },
+  {
+   "key": "bottom_half",
+   "label": "Bottom Half",
+   "desc": "Only the bottom half of each 1920\u00d71080 capture retained, 40 steps, navigation enabled."
+  },
+  {
+   "key": "web_search",
+   "label": "Web Search",
+   "desc": "search_engine_query and fetch_url_content added, full images, 40 steps."
+  }
+ ],
+ "ablation_order": [
+  "claude-opus-4-8",
+  "glm-5v-turbo",
+  "qwen3-7-plus",
+  "claude-opus-4-6",
+  "claude-sonnet-4-6",
+  "gpt-5-5",
+  "kimi-k2-5",
+  "gemini-3-5-flash",
+  "qwen3-5-397b-a17b",
+  "kimi-k2-6",
+  "gemini-3-1-pro",
+  "gpt-5-2",
+  "grok-4-3"
+ ],
+ "failure_modes": {
+  "definitions": [
+   {
+    "id": "FM1",
+    "name": "Vision Failure",
+    "description": "Errors in interpreting visual input or applying pretrained knowledge, including hallucinated landmark recognition, target object misclassification, and faulty perception of scene content.",
+    "stage": "Vision"
+   },
+   {
+    "id": "FM2",
+    "name": "Navigational Reasoning Failure",
+    "description": "Errors in spatial and navigational reasoning, including poor route planning, imprecise movement execution, and lost spatial awareness across observations.",
+    "stage": "Planning / Execution"
+   },
+   {
+    "id": "FM3",
+    "name": "Tool-Use Failure",
+    "description": "Errors in tool interface use, including malformed or invalid calls, hallucinated tool capabilities, and refusal to engage due to misunderstood tool semantics.",
+    "stage": "Tool Use"
+   }
+  ],
+  "by_task": [
+   {
+    "task": "competition",
+    "label": "Competition",
+    "short": "Comp.",
+    "fm1": 0.136,
+    "fm2": 0.78,
+    "fm3": 0.152,
+    "most_common": [
+     "fm2"
+    ]
+   },
+   {
+    "task": "synthetic",
+    "label": "Synthetic",
+    "short": "Synth.",
+    "fm1": 0.154,
+    "fm2": 0.802,
+    "fm3": 0.123,
+    "most_common": [
+     "fm2"
+    ]
+   },
+   {
+    "task": "place_naming",
+    "label": "Place Naming",
+    "short": "Place Naming",
+    "fm1": 0.326,
+    "fm2": 0.665,
+    "fm3": 0.035,
+    "most_common": [
+     "fm2"
+    ]
+   },
+   {
+    "task": "navigation",
+    "label": "Navigation Challenge",
+    "short": "Navigation Challenge",
+    "fm1": 0.351,
+    "fm2": 0.601,
+    "fm3": 0.145,
+    "most_common": [
+     "fm2"
+    ]
+   }
+  ],
+  "by_task_digits": 3,
+  "by_model": [
+   {
+    "id": "claude-opus-4-6",
+    "model": "Claude Opus 4.6",
+    "fm1": 18,
+    "fm2": 169,
+    "fm3": 0,
+    "n": 186
+   },
+   {
+    "id": "gpt-5-2",
+    "model": "GPT-5.2",
+    "fm1": 44,
+    "fm2": 178,
+    "fm3": 27,
+    "n": 218
+   },
+   {
+    "id": "qwen3-5-397b-a17b",
+    "model": "Qwen3.5-397B-A17B",
+    "fm1": 127,
+    "fm2": 70,
+    "fm3": 21,
+    "n": 207
+   },
+   {
+    "id": "qwen3-5-122b-a10b",
+    "model": "Qwen3.5-122B-A10B",
+    "fm1": 36,
+    "fm2": 187,
+    "fm3": 48,
+    "n": 254
+   }
+  ],
+  "annotated_models": [
+   "claude-opus-4-6",
+   "gpt-5-2",
+   "qwen3-5-397b-a17b",
+   "qwen3-5-122b-a10b"
+  ],
+  "scope": "Failed episodes of four models (Claude Opus 4.6, GPT-5.2, and Qwen3.5 at 122B and 397B parameters).",
+  "failure_definition": "A Precise Localization episode counts as failed if it scores worse than 4000 points (333 km), or gave no valid answer; a Place Naming or Navigation Challenge episode fails if its answer does not match the ground truth for that question.",
+  "note": "Share of failed episodes with each mode, pooled over the four annotated models; an episode can have several modes. Bold: most common."
+ },
+ "granularity": {
+  "columns": [
+   {
+    "key": "country",
+    "label": "Country",
+    "n": 27
+   },
+   {
+    "key": "state",
+    "label": "State",
+    "n": 11
+   },
+   {
+    "key": "city",
+    "label": "City",
+    "n": 31
+   },
+   {
+    "key": "street",
+    "label": "Street",
+    "n": 11
+   }
+  ],
+  "rows": [
+   {
+    "id": "claude-fable-5",
+    "name": "Claude Fable 5",
+    "country": 88.9,
+    "state": 27.3,
+    "city": 58.1,
+    "street": 45.5,
+    "best": [
+     "country",
+     "city",
+     "street"
+    ]
+   },
+   {
+    "id": "claude-opus-4-8",
+    "name": "Claude Opus 4.8",
+    "country": 88.9,
+    "state": 72.7,
+    "city": 41.9,
+    "street": 27.3,
+    "best": [
+     "country",
+     "state"
+    ]
+   },
+   {
+    "id": "claude-opus-4-7",
+    "name": "Claude Opus 4.7",
+    "country": 81.5,
+    "state": 54.5,
+    "city": 45.2,
+    "street": 27.3,
+    "best": []
+   },
+   {
+    "id": "gpt-5-5",
+    "name": "GPT-5.5",
+    "country": 85.2,
+    "state": 72.7,
+    "city": 48.4,
+    "street": 36.4,
+    "best": [
+     "state"
+    ]
+   },
+   {
+    "id": "gpt-5-4-pro",
+    "name": "GPT-5.4 Pro",
+    "country": 81.5,
+    "state": 54.5,
+    "city": 51.6,
+    "street": 36.4,
+    "best": []
+   }
+  ],
+  "digits": 1
+ },
+ "compressor": {
+  "rows": [
+   {
+    "task": "precise_localization",
+    "label": "Precise Localization",
+    "baseline_m": 11.06,
+    "compressor_m": 4.36,
+    "reduction_pct": 60.6,
+    "result_unit": "score",
+    "result_baseline": 4686,
+    "result_compressor": 4737
+   },
+   {
+    "task": "place_naming",
+    "label": "Place Naming",
+    "baseline_m": 6.2,
+    "compressor_m": 2.44,
+    "reduction_pct": 60.6,
+    "result_unit": "pct",
+    "result_baseline": 30.0,
+    "result_compressor": 26.25
+   },
+   {
+    "task": "navigation_challenge",
+    "label": "Navigation Challenge",
+    "baseline_m": 11.18,
+    "compressor_m": 4.8,
+    "reduction_pct": 57.1,
+    "result_unit": "pct",
+    "result_baseline": 24.39,
+    "result_compressor": 24.39
+   }
+  ],
+  "digits": {
+   "tokens_m": 2,
+   "reduction_pct": 1,
+   "result_pct": 2,
+   "result_score": 0
+  },
+  "mean_distance_error_km": {
+   "baseline": 166.89,
+   "compressor": 89.56
+  },
+  "roles": {
+   "planner": "Gemini 3 Flash",
+   "worker": "a fine-tuned Qwen2.5-VL-7B",
+   "compressor": "Gemini 2.5 Flash-Lite"
+  },
+  "note": "M denotes millions of tokens; reductions are computed from the displayed counts. Precise Localization reports the GeoGuessr score (the mean distance error falls from 166.89 km to 89.56 km with Compressor); Place Naming and Navigation Challenge report accuracy."
+ }
+};

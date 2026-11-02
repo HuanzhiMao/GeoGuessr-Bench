@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GeoGuesser Bench</title>
+<meta name="description" content="GeoGuesser Bench: 282 interactive Street View geolocation tasks for vision-language agents, a leaderboard of 23 VLMs and an offline environment.">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GeoGuesser Bench">
+<meta property="og:title" content="GeoGuesser Bench: Benchmarking Vision-Language Agents on Interactive Geolocation">
+<meta property="og:description" content="282 Street View tasks where agents rotate, zoom and move to report coordinates, name places and find objects, with a leaderboard of 23 VLMs.">
+<!-- Social preview image: relative until the site is deployed; README.md says how to make it absolute. -->
+<meta property="og:image" content="assets/video/type1-tepoztlan.jpg">
+<meta property="og:image:alt" content="Demo video still: the last view of an illustrative Precise Localization episode, a shop sign boxed as a human-made clue, beside the tool calls that led to it.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GeoGuesser Bench">
+<meta name="twitter:description" content="Benchmarking Vision-Language Agents on Interactive Geolocation: 282 Street View tasks and a leaderboard of 23 VLMs.">
+<meta name="twitter:image" content="assets/video/type1-tepoztlan.jpg">
+<meta name="twitter:image:alt" content="Demo video still: the last view of an illustrative Precise Localization episode, a shop sign boxed as a human-made clue, beside the tool calls that led to it.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A6B4D'/%3E%3Crect x='2.75' y='2.75' width='26.5' height='26.5' rx='5' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3Cpath d='M16 7.2a5.9 5.9 0 0 0-5.9 5.9c0 4.4 5.9 10.9 5.9 10.9s5.9-6.5 5.9-10.9A5.9 5.9 0 0 0 16 7.2zm0 8.1a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&amp;family=Google+Sans+Code:wght@400..600&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>
+  /* Theme before first paint: ?theme=light|dark (for QA) wins over the saved choice; no attribute means "system". */
+  (function () {
+    var d = document.documentElement, t = null;
+    try {
+      var m = /[?&]theme=(light|dark)(?:&|$)/.exec(window.location.search);
+      t = m ? m[1] : window.localStorage.getItem("geobench-theme");
+    } catch (e) { t = null; }
+    if (t === "light" || t === "dark") { d.setAttribute("data-theme", t); }
+  })();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="sign" href="#top" aria-label="GeoGuesser Bench, back to top">
+      <svg width="13" height="15" viewBox="0 0 13 15" aria-hidden="true"><path d="M6.5 0A6.1 6.1 0 0 0 .4 6.1C.4 10.7 6.5 15 6.5 15s6.1-4.3 6.1-8.9A6.1 6.1 0 0 0 6.5 0zm0 8.4a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6z" fill="currentColor"/></svg>
+      <span>GeoGuesser Bench</span>
+    </a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#leaderboard" data-nav="leaderboard">Leaderboard</a>
+      <a href="#demo" data-nav="demo">Demo</a>
+      <a href="#benchmark" data-nav="benchmark">Benchmark</a>
+      <a href="#findings" data-nav="findings">Findings</a>
+      <a href="#citation" data-nav="citation">Citation</a>
+    </nav>
+    <button class="theme-btn" id="theme-toggle" type="button" aria-label="Color theme: follows system. Switch to light.">
+      <span class="theme-btn__icon" aria-hidden="true"></span>
+      <span class="theme-btn__label">Auto</span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero -->
+  <section class="hero" id="top" aria-labelledby="page-title">
+    <div class="wrap hero__grid">
+      <div class="hero__head">
+        <p class="eyebrow">Preprint · 2026</p>
+        <h1 id="page-title">GeoGuesser Bench</h1>
+        <p class="subtitle">Benchmarking Vision-Language Agents on Interactive Geolocation</p>
+        <p class="lede">282 tasks in an offline Street View environment, where agents rotate, zoom and move to report coordinates, name places and find objects.</p>
+      </div>
+      <div class="hero__more">
+        <ul class="authors" aria-label="Authors">
+          <li>Huanzhi Mao<sup aria-label="equal contribution">∗</sup></li>
+          <li>Yichuan Wang<sup aria-label="equal contribution">∗</sup></li>
+          <li>Michael Koo</li>
+          <li>Wenyuan Huang</li>
+          <li>Huy Doan</li>
+          <li>Jinghan Xia</li>
+          <li>Ziyao Wang</li>
+          <li>Joseph E. Gonzalez</li>
+        </ul>
+        <ul class="affils" aria-label="Affiliations">
+          <li>University of California, Berkeley</li>
+          <li><sup>∗</sup>Equal contribution</li>
+          <li>Correspondence to: <a href="mailto:huanzhimao@berkeley.edu">huanzhimao@berkeley.edu</a></li>
+        </ul>
+        <div class="pills" id="link-pills" role="group" aria-label="Links"></div>
+      </div>
+
+      <figure class="hero__media" aria-labelledby="hero-caption">
+        <div class="viewport" id="hero-viewport">
+          <div class="viewport__screen">
+            <video id="hero-video" muted loop playsinline controls preload="metadata" aria-describedby="hero-caption"></video>
+            <div class="viewport__fallback" id="hero-fallback" hidden>
+              <span>The demo video is not available here.</span>
+              <a href="#demo">Step through the same episodes in the viewer</a>
+            </div>
+          </div>
+        </div>
+        <div class="chapters" id="hero-chapters" role="group" aria-label="Video chapters"></div>
+        <figcaption class="hero__caption" id="hero-caption">
+          Illustrative episodes: the authors chose the tool calls; they are not model rollouts. Imagery: Google Street View.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Headline figures -->
+  <section class="overview" aria-label="Overview">
+    <div class="wrap">
+      <dl class="stats" id="stats"></dl>
+    </div>
+  </section>
+
+  <!-- Leaderboard -->
+  <section class="section" id="leaderboard" data-nav="leaderboard" aria-labelledby="lb-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="lb-title">Leaderboard</h2>
+        <p class="section__lede">23 VLMs with identical prompts, tools and a 40-step budget, scored in GeoGuessr points <span class="nowrap">(0–5000)</span> or accuracy.</p>
+      </header>
+      <div class="tabs" role="tablist" aria-label="Leaderboard views" id="lb-tabs">
+        <button class="tab" type="button" role="tab" id="lb-tab-main" aria-controls="lb-panel-main" aria-selected="true">Main results</button>
+        <button class="tab" type="button" role="tab" id="lb-tab-ablations" aria-controls="lb-panel-ablations" aria-selected="false" tabindex="-1">Ablations</button>
+        <button class="tab" type="button" role="tab" id="lb-tab-steps" aria-controls="lb-panel-steps" aria-selected="false" tabindex="-1">Steps &amp; stopping</button>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="lb-panel-main" aria-labelledby="lb-tab-main" tabindex="0"></div>
+      <div class="tabpanel" role="tabpanel" id="lb-panel-ablations" aria-labelledby="lb-tab-ablations" tabindex="0" hidden></div>
+      <div class="tabpanel" role="tabpanel" id="lb-panel-steps" aria-labelledby="lb-tab-steps" tabindex="0" hidden></div>
+    </div>
+  </section>
+
+  <!-- Demo -->
+  <section class="section" id="demo" data-nav="demo" aria-labelledby="demo-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="demo-title">Demo</h2>
+        <p class="section__lede">Step through an example of each task type, see each tool at work, then watch real agents’ logged tool calls.</p>
+      </header>
+
+      <!-- Task types: one tab per type, each a stop on a route from Knowing to Looking (what the task draws on
+           by design); the selected tab's example plays in the viewer below. The tabs are static so they read
+           without JavaScript. viewer.js wires them and fills #viewer-panel, which all three tabs share;
+           data-tabs="viewer" keeps site.js's generic tabs (one panel per tab) off this list. -->
+      <div class="sub" id="task-types">
+        <div class="sub__head">
+          <h3 id="task-types-title">Three task types, from knowing to looking</h3>
+          <p>Pick a type to step through an illustrative example with the arrow keys, the slider or the log.</p>
+        </div>
+        <div class="viewer" id="viewer">
+          <div class="tasksel">
+            <p class="sr-only">By design, Precise Localization depends mainly on knowledge, Place Naming on both, and Navigation Challenge mainly on exploration.</p>
+            <div class="tasksel__route" aria-hidden="true"><span>Knowing</span><i></i><span>Looking</span></div>
+            <div class="tasksel__tabs" role="tablist" aria-labelledby="task-types-title" data-tabs="viewer">
+              <button class="tasktab" type="button" role="tab" id="task-tab-pl" aria-selected="true" aria-controls="viewer-panel" aria-labelledby="task-name-pl" aria-describedby="task-count-pl task-desc-pl" data-task="precise_localization" style="--c: var(--t1)">
+                <span class="tasktab__stop" aria-hidden="true"></span>
+                <span class="tasktab__name" id="task-name-pl">Precise Localization</span>
+                <span class="tasktab__count" id="task-count-pl">122 entries · <span class="nowrap">80 Synthetic</span> <span class="nowrap">+ 42 Competition</span></span>
+                <span class="tasktab__desc" id="task-desc-pl">Report the latitude and longitude of the starting location, as in GeoGuessr.</span>
+              </button>
+              <button class="tasktab" type="button" role="tab" id="task-tab-pn" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-pn" aria-describedby="task-count-pn task-desc-pn" data-task="place_naming" style="--c: var(--t2)">
+                <span class="tasktab__stop" aria-hidden="true"></span>
+                <span class="tasktab__name" id="task-name-pn">Place Naming</span>
+                <span class="tasktab__count" id="task-count-pn">80 entries · <span class="nowrap">country 27</span> · <span class="nowrap">state 11</span> · <span class="nowrap">city 31</span> · <span class="nowrap">street 11</span></span>
+                <span class="tasktab__desc" id="task-desc-pn">Name the country, state, city or street of the starting location, as the question asks.</span>
+              </button>
+              <button class="tasktab" type="button" role="tab" id="task-tab-nc" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-nc" aria-describedby="task-count-nc task-desc-nc" data-task="navigation_challenge" style="--c: var(--t3)">
+                <span class="tasktab__stop" aria-hidden="true"></span>
+                <span class="tasktab__name" id="task-name-nc">Navigation Challenge</span>
+                <span class="tasktab__count" id="task-count-nc">80 entries · Identification and Enumeration questions</span>
+                <span class="tasktab__desc" id="task-desc-nc">Turn or move to find targets outside the first view, then identify or count them.</span>
+              </button>
+            </div>
+          </div>
+          <div class="viewer__panel" role="tabpanel" id="viewer-panel" aria-labelledby="task-name-pl"></div>
+        </div>
+      </div>
+
+      <div class="sub" id="environment">
+        <div class="sub__head">
+          <h3>The environment</h3>
+          <p>Camera tools change the view (a scripted API test); move tools step to an adjacent panorama.</p>
+        </div>
+        <div class="envdemo" id="envdemo"></div>
+        <div class="movedemo" id="movedemo"></div>
+        <div class="envfacts">
+          <p class="label" id="envfacts-label">In benchmark episodes</p>
+          <ul aria-labelledby="envfacts-label">
+            <li>Start facing north with a 90° view</li>
+            <li>Up to 40 tool-calling steps</li>
+            <li>No map, coordinates or web search</li>
+            <li>Offline panoramas: views never drift</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sub">
+        <div class="sub__head">
+          <h3>Real agent traces</h3>
+          <p>Logged tool calls from evaluation runs. The logs don’t keep the returned images.</p>
+        </div>
+        <div class="traces" id="traces"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benchmark -->
+  <section class="section" id="benchmark" data-nav="benchmark" aria-labelledby="bench-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="bench-title">Benchmark</h2>
+        <p class="section__lede">How answers are scored, and where the 282 tasks start.</p>
+      </header>
+
+      <div class="sub" id="scoring">
+        <div class="sub__head">
+          <h3>Scoring</h3>
+        </div>
+        <div class="scoring">
+          <div class="scoring__text">
+            <p class="prose">In Precise Localization, points fall exponentially with distance and halve about every <span class="nowrap">1,034 km</span>.</p>
+            <div class="formula">
+              <p role="math" aria-label="S of d equals 5000 times e to the minus 10 d over D"><var>S</var>(<var>d</var>) = 5000 · exp(−10 <var>d</var> / <var>D</var>)</p>
+              <p class="formula__d"><var>D</var> = 14,916.862 km</p>
+            </div>
+            <p class="prose">Place Naming and Navigation Challenge need an exact match with an accepted answer.</p>
+          </div>
+          <div class="chart-card">
+            <div class="chart" id="score-curve"></div>
+            <div class="readout">
+              <label for="score-slider">Distance</label>
+              <input class="range" id="score-slider" type="range" min="-1" max="4.3" step="any" value="3" aria-describedby="score-out">
+              <output id="score-out" for="score-slider" aria-live="polite"></output>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub" id="locations">
+        <div class="sub__head">
+          <h3>Where the tasks start</h3>
+          <p>Starting locations of all 282 entries, rounded to whole degrees.</p>
+        </div>
+        <div class="mapwrap" id="location-map"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Findings: each result is a <details> item, closed by default. Its title line (the <summary>)
+       opens the text and chart; charts.js redraws a chart at its container's width when its item opens. -->
+  <section class="section" id="findings" data-nav="findings" aria-labelledby="findings-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="findings-title">Findings</h2>
+        <p class="section__lede">Five results from evaluating 23 VLMs; open one to see the data behind it.</p>
+      </header>
+
+      <div class="findings">
+        <details class="finding" id="finding-knowing">
+          <summary class="finding__sum"><h3 class="finding__title">Knowing where you are is not the same as finding things</h3><span class="finding__icon" aria-hidden="true"></span></summary>
+          <div class="finding__body">
+            <div class="finding__text">
+              <p>Across 23 models, Precise Localization scores correlate only weakly with Navigation Challenge accuracy (Spearman&nbsp;ρ&nbsp;=&nbsp;0.39 for both splits). GPT-5.4 is third on Synthetic but ties for 18th on Navigation Challenge.</p>
+            </div>
+            <div class="finding__visual">
+              <div class="chart-card"><div class="chart" id="knowing-scatter"></div></div>
+              <p class="figcap">Each dot is one model; hover or focus a dot for its values.</p>
+              <details class="datatable" id="knowing-table"><summary>Show the values as a table</summary></details>
+            </div>
+          </div>
+        </details>
+
+        <details class="finding" id="finding-commit">
+          <summary class="finding__sum"><h3 class="finding__title">Agents trail the experts, and often fail to commit</h3><span class="finding__icon" aria-hidden="true"></span></summary>
+          <div class="finding__body">
+            <div class="finding__text">
+              <p>The best agent, Claude Opus&nbsp;4.8, averages 4352.4 points on Competition against the experts’ 4770.3. Pooled over models, 45.7% of Competition and 38.6% of Synthetic episodes score zero, mostly at the step limit or by abstaining.</p>
+            </div>
+            <div class="finding__visual">
+              <div class="chart-card"><div class="chart" id="zero-bars"></div></div>
+              <p class="figcap">Share of all episodes, pooled over the 23 models.</p>
+              <details class="datatable" id="zero-table"><summary>Show the counts as a table</summary></details>
+            </div>
+          </div>
+        </details>
+
+        <details class="finding" id="finding-robust">
+          <summary class="finding__sum"><h3 class="finding__title">Stronger agents tolerate restricted views</h3><span class="finding__icon" aria-hidden="true"></span></summary>
+          <div class="finding__body">
+            <div class="finding__text">
+              <p>With half of each view cut away, Claude Opus&nbsp;4.8 keeps 98% of its score, Gemini&nbsp;3.1&nbsp;Pro only 33%. Across 13 models, the share kept rises with main-setting score (Spearman&nbsp;ρ&nbsp;=&nbsp;0.73).</p>
+            </div>
+            <div class="finding__visual">
+              <div class="chart-card"><div class="chart" id="retention-bars"></div></div>
+              <p class="figcap">Averaged over both halves and both splits; “Main” is the mean main-setting score.</p>
+              <details class="datatable" id="retention-table"><summary>Show the values as a table</summary></details>
+            </div>
+          </div>
+        </details>
+
+        <details class="finding" id="finding-coverage">
+          <summary class="finding__sum"><h3 class="finding__title">Agents rarely inspect the full panorama</h3><span class="finding__icon" aria-hidden="true"></span></summary>
+          <div class="finding__body">
+            <div class="finding__text">
+              <p>Without movement, about two-thirds of episodes with a tool call never tilt the camera. Yet Claude Opus&nbsp;4.8 scores 4646 on Competition without moving or tilting, covering a median 0.31 of the viewing sphere.</p>
+            </div>
+            <div class="finding__visual" id="coverage-visual"></div>
+          </div>
+        </details>
+
+        <details class="finding" id="finding-failures">
+          <summary class="finding__sum"><h3 class="finding__title">Navigation is the main failure mode</h3><span class="finding__icon" aria-hidden="true"></span></summary>
+          <div class="finding__body">
+            <div class="finding__text">
+              <p>In failed episodes of four models, navigational reasoning failure (FM2) is the most common mode on every task, appearing in 60–80% of them. It accounts for most failures of three of the four models.</p>
+            </div>
+            <div class="finding__visual" id="fm-visual"></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Harness: the Planner–Worker–Compressor loop as an animated diagram (assets/js/harness.js draws it
+       into #hx-diagram), the raw history the brief replaces, and the Planner tokens with and without the
+       Compressor (#hx-tokens, from GEOBENCH.leaderboard.compressor). The two input sizes below are the
+       paper's median input of Gemini 3 Flash on Navigation Challenge (about 1.1K tokens at the first step,
+       32.6K at the 40th); the step-1 bar is 1.1 / 32.6 = 3.37% of the step-40 bar. -->
+  <section class="section" id="harness" data-nav="findings" aria-labelledby="harness-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="harness-title">An efficient harness</h2>
+        <p class="section__lede">Three models share the work, and a short brief replaces the raw history that grows every step.</p>
+      </header>
+      <div class="harness" id="harness-visual">
+        <div class="hx-loop">
+          <div class="hx-diagram" id="hx-diagram"></div>
+          <div class="hx-ctx" id="hx-ctx">
+            <div class="hx-ctx__block">
+              <p class="label">Raw history · reread every step</p>
+              <div class="hx-grow" role="img" aria-label="Median input of Gemini 3 Flash on Navigation Challenge: about 1.1K tokens at step 1, 32.6K tokens at step 40.">
+                <div class="hx-grow__row"><span class="hx-grow__k">Step 1</span><span class="hx-bar"><span class="hx-bar__fill" style="--f: 3.37%"><span class="hx-bar__v">about 1.1K</span></span></span></div>
+                <div class="hx-grow__row"><span class="hx-grow__k">Step 40</span><span class="hx-bar"><span class="hx-bar__fill" style="--f: 100%"><span class="hx-bar__v">32.6K tokens</span></span></span></div>
+              </div>
+              <p class="figcap">Median input, Gemini 3 Flash on Navigation Challenge.</p>
+            </div>
+            <div class="hx-ctx__block">
+              <p class="label">Brief · read in its place</p>
+              <p class="hx-brief"><code>brief</code><span class="hx-brief__plus">+</span><code>focus_hint</code><span class="hx-brief__plus">+</span><span class="hx-brief__kf"><i aria-hidden="true"></i>key frames</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="hx-tokens" id="hx-tokens"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Citation -->
+  <section class="section" id="citation" data-nav="citation" aria-labelledby="cite-title">
+    <div class="wrap">
+      <header class="section__head">
+        <h2 id="cite-title">Citation</h2>
+        <p class="section__lede">If you use GeoGuesser Bench or its environment, please cite the paper.</p>
+      </header>
+      <div class="bib">
+        <pre id="bibtex" tabindex="0"><span class="bib-c">% arXiv identifier pending; this entry will be updated when the preprint is posted.</span>
+<span class="bib-k">@article</span>{mao2026geoguesserbench,
+  title   = {{GeoGuesser Bench}: Benchmarking Vision-Language Agents on Interactive Geolocation},
+  author  = {Mao, Huanzhi and Wang, Yichuan and Koo, Michael and Huang, Wenyuan and Doan, Huy and Xia, Jinghan and Wang, Ziyao and Gonzalez, Joseph E.},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+        <button class="ctrl copy" type="button" id="bib-copy">Copy BibTeX</button>
+      </div>
+      <p class="copy-status" id="bib-status" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <a class="footer__sign" href="#top" aria-label="GeoGuesser Bench, back to top">
+        <svg width="15" height="17" viewBox="0 0 13 15" aria-hidden="true"><path d="M6.5 0A6.1 6.1 0 0 0 .4 6.1C.4 10.7 6.5 15 6.5 15s6.1-4.3 6.1-8.9A6.1 6.1 0 0 0 6.5 0zm0 8.4a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6z" fill="currentColor"/></svg>
+        <span>GeoGuesser Bench</span>
+      </a>
+      <p class="footer__tag">Benchmarking vision-language agents on interactive geolocation.</p>
+    </div>
+    <nav class="footer__col" aria-labelledby="footer-nav-title">
+      <p class="footer__h" id="footer-nav-title">On this page</p>
+      <ul>
+        <li><a href="#leaderboard">Leaderboard</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#benchmark">Benchmark</a></li>
+        <li><a href="#findings">Findings</a></li>
+        <li><a href="#harness">Harness</a></li>
+        <li><a href="#citation">Citation</a></li>
+      </ul>
+    </nav>
+    <div class="footer__col footer__notes">
+      <p class="footer__h">About the data</p>
+      <p>Results come from the paper or are computed from its numbers.</p>
+      <p>Example episodes are illustrative, not model rollouts. The environment demo is a scripted API test and its map is schematic; agent traces are logged tool calls without the returned images.</p>
+    </div>
+    <div class="footer__base">
+      <span>GeoGuesser Bench · 2026</span>
+      <span>Imagery: Google Street View</span>
+    </div>
+  </div>
+</footer>
+
+<noscript><p class="wrap note" style="padding-block:16px">The leaderboard, episode viewer, environment demo, and charts on this page need JavaScript.</p></noscript>
+
+<!-- Data: each file assigns one key into window.GEOBENCH (works from file://) -->
+<script src="assets/data/leaderboard.js"></script>
+<script src="assets/data/figures.js"></script>
+<script src="assets/data/world.js"></script>
+<script src="assets/data/episodes.js"></script>
+<script src="assets/data/traces.js"></script>
+<script src="assets/data/replays.js"></script>
+<script src="assets/data/videos.js"></script>
+<!-- Page scripts -->
+<script src="assets/js/site.js"></script>
+<script src="assets/js/leaderboard.js"></script>
+<script src="assets/js/viewer.js"></script>
+<script src="assets/js/envdemo.js"></script>
+<script src="assets/js/movedemo.js"></script>
+<script src="assets/js/traces.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/harness.js"></script>
+</body>
+</html>
