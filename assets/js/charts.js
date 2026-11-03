@@ -12,7 +12,38 @@
   var LB = G.leaderboard;
   var FIG = G.figures || {};
 
-  function width(node, fallback) { return Math.max(260, Math.round(node.clientWidth || fallback || 640)); }
+  function width(node, fallback) { return Math.max(1, Math.round(node.clientWidth || fallback || 640)); }
+  /* Use the SVG's own coordinate system when CSS or browser zoom changes its rendered size. */
+  function svgPoint(root, ev, W, H) {
+    var matrix = root.getScreenCTM();
+    if (matrix) {
+      var point = root.createSVGPoint();
+      point.x = ev.clientX; point.y = ev.clientY;
+      return point.matrixTransform(matrix.inverse());
+    }
+    var rect = root.getBoundingClientRect();
+    return { x: (ev.clientX - rect.left) * W / (rect.width || W), y: (ev.clientY - rect.top) * H / (rect.height || H) };
+  }
+  /* Keep measured labels inside their SVG without shrinking their readable text size. */
+  function containLabels(root, W) {
+    if (!root.getBoundingClientRect().width) { return; }
+    U.$all("text", root).forEach(function (label) {
+      var box, offset = 0;
+      try { box = label.getBBox(); } catch (e) { return; }
+      if (!box.width) { return; }
+      if (box.x < 4) { offset = 4 - box.x; }
+      else if (box.x + box.width > W - 4) { offset = W - 4 - box.x - box.width; }
+      if (offset) { label.setAttribute("x", parseFloat(label.getAttribute("x")) + offset); }
+    });
+  }
+  /* Web fonts may replace the fallback after the first draw and change label widths. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      U.$all("#score-curve > svg, #knowing-scatter > svg").forEach(function (root) {
+        containLabels(root, root.viewBox.baseVal.width);
+      });
+    });
+  }
   function figure(key, opts) {
     opts = opts || {};
     var f = FIG[key];
@@ -96,6 +127,7 @@
     function draw() {
       clear(host);
       var W = width(host, 560);
+      var narrow = W < 420;
       var H = Math.round(Math.max(240, Math.min(340, W * 0.56)));
       var m = { l: 50, r: 14, t: 26, b: 46 };
       var pw = W - m.l - m.r, ph = H - m.t - m.b;
@@ -111,11 +143,13 @@
       [-1, 0, 1, 2, 3, 4].forEach(function (p) {
         grid.appendChild(svg("line", { x1: x(p), x2: x(p), y1: m.t, y2: m.t + ph }));
         var lab = p < 0 ? "0.1" : U.grouped(Math.pow(10, p), 0);
-        root.appendChild(svg("text", { x: x(p), y: m.t + ph + 17, "text-anchor": p === -1 ? "start" : "middle" }, lab));
+        if (narrow && p >= 3) { lab = Math.pow(10, p - 3) + "k"; }
+        root.appendChild(svg("text", { x: x(p), y: m.t + ph + 17, "text-anchor": p === -1 ? "start" : (p === 4 ? "end" : "middle") }, lab));
       });
       root.insertBefore(grid, root.firstChild);
       root.appendChild(svg("line", { class: "baseline", x1: m.l, x2: W - m.r, y1: y(0), y2: y(0) }));
-      root.appendChild(svg("text", { class: "axis-title", x: m.l + pw / 2, y: H - 6, "text-anchor": "middle" }, "Distance from the answer (km, log scale)"));
+      root.appendChild(svg("text", { class: "axis-title", x: narrow ? W / 2 : m.l + pw / 2, y: H - 6, "text-anchor": "middle" },
+        narrow ? "Distance (km, log scale)" : "Distance from the answer (km, log scale)"));
       root.appendChild(svg("text", { class: "axis-title", x: m.l - 8, y: 12, "text-anchor": "start" }, "GeoGuessr points"));
       var N = 260, dPath = "", aPath = "";
       for (var i = 0; i <= N; i++) {
@@ -141,8 +175,8 @@
       /* Drag on the plot to move the distance. */
       var hit = svg("rect", { x: m.l, y: m.t, width: pw, height: ph, fill: "transparent", style: "cursor: ew-resize; touch-action: pan-y" });
       function fromEvent(ev) {
-        var r = root.getBoundingClientRect();
-        var px = Math.max(m.l, Math.min(W - m.r, ev.clientX - r.left));
+        var point = svgPoint(root, ev, W, H);
+        var px = Math.max(m.l, Math.min(W - m.r, point.x));
         var lx = X0 + (px - m.l) / pw * (X1 - X0);
         slider.value = String(Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), lx)));
         update();
@@ -154,6 +188,7 @@
       hit.addEventListener("pointercancel", function () { dragging = false; });
       root.appendChild(hit);
       host.appendChild(root);
+      containLabels(root, W);
       update();
     }
     /* Start at the halving distance D ln 2 / 10 (2,500 points). step="any" keeps it exact;
@@ -326,7 +361,7 @@
       /* Phones: more room under the axis title for the label above Claude Fable 5's dot, and a
          shorter x-axis title that fits the plot's width. */
       var narrow = W < 520;
-      var m = { l: 44, r: 14, t: narrow ? 36 : 24, b: 46 };
+      var m = { l: 44, r: 14, t: narrow ? 36 : 24, b: narrow ? 60 : 46 };
       var pw = W - m.l - m.r, ph = H - m.t - m.b;
       function x(v) { return m.l + v / 5000 * pw; }
       function y(v) { return m.t + (1 - v / ymax) * ph; }
@@ -344,8 +379,12 @@
       }
       root.appendChild(grid);
       root.appendChild(svg("line", { class: "baseline", x1: m.l, x2: m.l + pw, y1: y(0), y2: y(0) }));
-      root.appendChild(svg("text", { class: "axis-title", x: m.l + pw / 2, y: H - 6, "text-anchor": "middle" },
-        narrow ? "Mean Precise Localization score (both splits)" : "Mean Precise Localization score (Competition and Synthetic)"));
+      if (narrow) {
+        root.appendChild(svg("text", { class: "axis-title", x: W / 2, y: H - 22, "text-anchor": "middle" }, "Mean Precise Localization score"));
+        root.appendChild(svg("text", { class: "axis-title", x: W / 2, y: H - 6, "text-anchor": "middle" }, "(Competition and Synthetic)"));
+      } else {
+        root.appendChild(svg("text", { class: "axis-title", x: m.l + pw / 2, y: H - 6, "text-anchor": "middle" }, "Mean Precise Localization score (Competition and Synthetic)"));
+      }
       root.appendChild(svg("text", { class: "axis-title", x: m.l - 8, y: 12 }, "Navigation Challenge accuracy"));
       var layer = svg("g");
       var hot = null;
@@ -403,14 +442,15 @@
       root.appendChild(svg("text", { class: "lbl-sub", x: m.l + pw, y: m.t + ph - 8, "text-anchor": "end" }, "Spearman ρ = 0.39 for each split"));
       /* Nearest-point hover: the pointer only has to be closest. */
       root.addEventListener("pointermove", function (ev) {
-        var r = root.getBoundingClientRect();
-        var px = ev.clientX - r.left, py = ev.clientY - r.top;
+        var point = svgPoint(root, ev, W, H);
+        var px = point.x, py = point.y;
         var best = null, bd = 30 * 30;
         nodes.forEach(function (n) { var d = (n.cx - px) * (n.cx - px) + (n.cy - py) * (n.cy - py); if (d < bd) { bd = d; best = n; } });
         if (best) { show(best.p, best.dot); } else { hide(); }
       });
       root.addEventListener("pointerleave", hide);
       host.insertBefore(root, host.firstChild);
+      containLabels(root, W);
     }
     /* Rank as the paper words it: the best position held, with "tied" when other models share
        the value (the paper's "ties for 18th"). Counted from the Table 1 values. */
@@ -519,25 +559,43 @@
     var mainRank = rows.slice().sort(function (a, b) { return mean2(b) - mean2(a); }).map(function (m) { return m.id; });
     var list = el("div", { role: "list", "aria-label": "Retention by model", style: { display: "grid", gap: "6px" } });
     var TRACKS = "minmax(0, 152px) minmax(0, 1fr) 54px";   /* px, so header and rows line up */
+    var gridRows = [], modelLabels = [];
+    var retentionTitle = el("span", { text: "Share of main-setting score kept with half views" });
     var head = el("div", { "aria-hidden": "true", style: { display: "grid", "grid-template-columns": TRACKS, gap: "10px", "font-size": "11.5px", color: "var(--muted)", "font-weight": "600" } }, [
-      el("span", { text: "Model" }), el("span", { text: "Share of main-setting score kept with half views" }), el("span", { style: { "text-align": "right" }, text: "Main" })
+      el("span", { text: "Model" }), retentionTitle, el("span", { style: { "text-align": "right" }, text: "Main" })
     ]);
+    gridRows.push(head);
     list.appendChild(head);
     rows.forEach(function (m) {
       var pct = Math.round(m.retention * 100);
       var emph = m.id === "claude-opus-4-8" || m.id === "gemini-3-1-pro";   /* the two the text names */
+      var modelLabel = el("span", { style: { "font-size": "13px", "font-weight": emph ? "800" : "600", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" }, title: m.name, text: m.name });
+      modelLabels.push(modelLabel);
       var rowEl = el("div", { role: "listitem", style: { display: "grid", "grid-template-columns": TRACKS, gap: "10px", "align-items": "center" } }, [
-        el("span", { style: { "font-size": "13px", "font-weight": emph ? "800" : "600", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" }, title: m.name, text: m.name }),
-        el("span", { style: { display: "flex", "align-items": "center", gap: "8px" } }, [
-          el("span", { class: "bar", style: { flex: "1 1 auto", height: "12px" }, "aria-hidden": "true" }, el("i", { style: { width: (m.retention * 100).toFixed(2) + "%", "--c": "var(--t1)" } })),
-          el("span", { class: "num", style: { "font-size": "13px", "font-weight": "700", width: "3em", "text-align": "right" }, text: pct + "%" })
+        modelLabel,
+        el("span", { style: { display: "flex", "align-items": "center", gap: "8px", "min-width": "0" } }, [
+          el("span", { class: "bar", style: { flex: "1 1 auto", "min-width": "0", height: "12px" }, "aria-hidden": "true" }, el("i", { style: { width: (m.retention * 100).toFixed(2) + "%", "--c": "var(--t1)" } })),
+          el("span", { class: "num", style: { "font-size": "13px", "font-weight": "700", flex: "0 0 3em", "text-align": "right" }, text: pct + "%" })
         ]),
         el("span", { class: "num muted", style: { "font-size": "12px", "text-align": "right" }, title: "Mean main-setting Precise Localization score, rank " + (mainRank.indexOf(m.id) + 1) + " of " + rows.length, text: String(Math.round(mean2(m))) })
       ]);
       rowEl.setAttribute("aria-label", m.name + ": keeps " + pct + "% of its main-setting score; mean main-setting score " + Math.round(mean2(m)));
+      gridRows.push(rowEl);
       list.appendChild(rowEl);
     });
     host.appendChild(list);
+    function layout() {
+      var narrow = width(host) < 420;
+      gridRows.forEach(function (row) {
+        row.style.gridTemplateColumns = narrow ? "minmax(0, 1.2fr) minmax(64px, 1fr) 40px" : TRACKS;
+        row.style.gap = narrow ? "8px" : "10px";
+      });
+      modelLabels.forEach(function (label) { label.style.whiteSpace = narrow ? "normal" : "nowrap"; label.style.overflowWrap = narrow ? "anywhere" : "normal"; });
+      retentionTitle.textContent = narrow ? "Score retained" : "Share of main-setting score kept with half views";
+    }
+    layout();
+    U.onResize(layout);
+    onOpen(host, layout);
     var details = document.getElementById("retention-table");
     if (details) {
       details.appendChild(U.simpleTable("Retention under top and bottom half views",

@@ -157,6 +157,14 @@
       s.classList.toggle("is-now", j === i);
       if (j === i) { s.setAttribute("aria-current", "step"); } else { s.removeAttribute("aria-current"); }
     });
+    /* Touch targets keep their width on phones; follow the current step within its own scroller. */
+    var current = segs[i];
+    if (current && steps.scrollWidth > steps.clientWidth) {
+      var left = current.offsetLeft, right = left + current.offsetWidth;
+      if (left < steps.scrollLeft || right > steps.scrollLeft + steps.clientWidth) {
+        steps.scrollLeft = Math.max(0, right - steps.clientWidth);
+      }
+    }
     count.textContent = pad2(i + 1) + " / " + pad2(N);
     Object.keys(toolEls).forEach(function (t) { toolEls[t].classList.toggle("is-lit", tools.indexOf(t) >= 0); });
     if (arrived && motionOK() && tools.indexOf("capture_view") >= 0) { restart(flash, "is-on"); }

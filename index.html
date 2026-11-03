@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&amp;family=Google+Sans+Code:wght@400..600&amp;display=swap">
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v=20261103-mobile-axis-4">
 <script>
   /* Theme before first paint: ?theme=light|dark (for QA) wins over the saved choice; no attribute means "system". */
   (function () {
@@ -156,24 +156,39 @@
             <p class="sr-only">By design, Precise Localization depends mainly on knowledge, Place Naming on both, and Navigation Challenge mainly on exploration.</p>
             <div class="tasksel__route" aria-hidden="true"><span>Knowing</span><i></i><span>Looking</span></div>
             <div class="tasksel__tabs" role="tablist" aria-labelledby="task-types-title" data-tabs="viewer">
-              <button class="tasktab" type="button" role="tab" id="task-tab-pl" aria-selected="true" aria-controls="viewer-panel" aria-labelledby="task-name-pl" aria-describedby="task-count-pl task-desc-pl" data-task="precise_localization" style="--c: var(--t1)">
+              <div class="tasksel__item" role="presentation" style="--c: var(--t1)">
+                <button class="tasktab" type="button" role="tab" id="task-tab-pl" aria-selected="true" aria-controls="viewer-panel" aria-labelledby="task-name-pl" aria-describedby="task-count-pl task-desc-pl" data-task="precise_localization">
+                  <span class="tasktab__name" id="task-name-pl">Precise Localization</span>
+                  <span class="tasktab__count" id="task-count-pl">
+                    <span>122 entries</span>
+                    <span class="tasktab__breakdown"><span>80 Synthetic</span> <span>42 Competition</span></span>
+                  </span>
+                  <span class="tasktab__desc" id="task-desc-pl">Report the latitude and longitude of the starting location, as in GeoGuessr.</span>
+                </button>
                 <span class="tasktab__stop" aria-hidden="true"></span>
-                <span class="tasktab__name" id="task-name-pl">Precise Localization</span>
-                <span class="tasktab__count" id="task-count-pl">122 entries · <span class="nowrap">80 Synthetic</span> <span class="nowrap">+ 42 Competition</span></span>
-                <span class="tasktab__desc" id="task-desc-pl">Report the latitude and longitude of the starting location, as in GeoGuessr.</span>
-              </button>
-              <button class="tasktab" type="button" role="tab" id="task-tab-pn" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-pn" aria-describedby="task-count-pn task-desc-pn" data-task="place_naming" style="--c: var(--t2)">
+              </div>
+              <div class="tasksel__item" role="presentation" style="--c: var(--t2)">
+                <button class="tasktab" type="button" role="tab" id="task-tab-pn" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-pn" aria-describedby="task-count-pn task-desc-pn" data-task="place_naming">
+                  <span class="tasktab__name" id="task-name-pn">Place Naming</span>
+                  <span class="tasktab__count" id="task-count-pn">
+                    <span>80 entries</span>
+                    <span class="tasktab__breakdown"><span>Country 27</span> <span>State 11</span> <span>City 31</span> <span>Street 11</span></span>
+                  </span>
+                  <span class="tasktab__desc" id="task-desc-pn">Name the country, state, city or street of the starting location, as the question asks.</span>
+                </button>
                 <span class="tasktab__stop" aria-hidden="true"></span>
-                <span class="tasktab__name" id="task-name-pn">Place Naming</span>
-                <span class="tasktab__count" id="task-count-pn">80 entries · <span class="nowrap">country 27</span> · <span class="nowrap">state 11</span> · <span class="nowrap">city 31</span> · <span class="nowrap">street 11</span></span>
-                <span class="tasktab__desc" id="task-desc-pn">Name the country, state, city or street of the starting location, as the question asks.</span>
-              </button>
-              <button class="tasktab" type="button" role="tab" id="task-tab-nc" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-nc" aria-describedby="task-count-nc task-desc-nc" data-task="navigation_challenge" style="--c: var(--t3)">
+              </div>
+              <div class="tasksel__item" role="presentation" style="--c: var(--t3)">
+                <button class="tasktab" type="button" role="tab" id="task-tab-nc" aria-selected="false" tabindex="-1" aria-controls="viewer-panel" aria-labelledby="task-name-nc" aria-describedby="task-count-nc task-desc-nc" data-task="navigation_challenge">
+                  <span class="tasktab__name" id="task-name-nc">Navigation Challenge</span>
+                  <span class="tasktab__count" id="task-count-nc">
+                    <span>80 entries</span>
+                    <span>Identification and Enumeration questions</span>
+                  </span>
+                  <span class="tasktab__desc" id="task-desc-nc">Turn or move to find targets outside the first view, then identify or count them.</span>
+                </button>
                 <span class="tasktab__stop" aria-hidden="true"></span>
-                <span class="tasktab__name" id="task-name-nc">Navigation Challenge</span>
-                <span class="tasktab__count" id="task-count-nc">80 entries · Identification and Enumeration questions</span>
-                <span class="tasktab__desc" id="task-desc-nc">Turn or move to find targets outside the first view, then identify or count them.</span>
-              </button>
+              </div>
             </div>
           </div>
           <div class="viewer__panel" role="tabpanel" id="viewer-panel" aria-labelledby="task-name-pl"></div>
