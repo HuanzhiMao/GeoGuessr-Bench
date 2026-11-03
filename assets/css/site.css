@@ -1153,7 +1153,6 @@ th[aria-sort="ascending"] .sort__icon .down, th[aria-sort="descending"] .sort__i
 .pin { fill: var(--marker); stroke: var(--ink); stroke-width: 1.25; }
 .provenance { font-size: var(--fs-sm); color: var(--muted); max-width: 96ch; line-height: 1.5; }
 .provenance b { color: var(--ink); font-weight: 600; }
-.downloads { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: var(--fs-sm); }
 
 /* ---------- Environment demo (Demo section) ---------- */
 /* The scripted API test plays like a GIF: the view, the calls behind it as code chips, and a pad of

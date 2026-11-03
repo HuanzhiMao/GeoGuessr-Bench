@@ -112,11 +112,9 @@
   var side = el("div", { class: "side" }, [qCard, logCard, ansCard]);
 
   var provenance = el("p", { class: "provenance" });
-  var downloads = el("p", { class: "downloads" });
 
   panel.appendChild(el("div", { class: "viewer__grid" }, [stage, side]));
   panel.appendChild(provenance);
-  panel.appendChild(downloads);
 
   /* ---------- Rendering ---------- */
   function ep() { return EPS[state.e]; }
@@ -335,12 +333,6 @@
     var head = pm ? pm[1] + ":" : (e.kind === "replay" ? "Replay." : "Illustrative episode.");
     provenance.appendChild(el("b", { text: head + " " }));
     provenance.appendChild(document.createTextNode(pm ? pm[2] : prov));
-    clear(downloads);
-    var V = G.videos && G.videos[e.id];
-    if (V && V.mp4) {
-      downloads.appendChild(el("a", { href: V.mp4, download: "", text: "Download this episode as MP4" + (V.duration ? " (" + U.clock(V.duration) + ")" : "") }));
-    }
-    downloads.hidden = !downloads.firstChild;
     /* Rows that no view of this episode uses are hidden, so they leave no gap; rows that some
        views use keep their height, so the controls do not jump while stepping. */
     clueNotes.hidden = !e.frames.some(function (fr) { return fr.notes && fr.notes.length; });
