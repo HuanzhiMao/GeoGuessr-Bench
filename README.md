@@ -28,7 +28,7 @@ The hero has three link buttons: arXiv, Code and Environment. Their URLs are in 
 
 ```js
 var LINKS = {
-  arxiv: "",
+  arxiv: "https://arxiv.org/abs/2611.02698",
   code: "https://github.com/HuanzhiMao/gorilla",
   environment: "https://github.com/HuanzhiMao/GeoGuessr-StreetView-Server"
 };
@@ -51,10 +51,10 @@ panorama ID and its camera coordinates. If Google cannot find the ID, it uses th
 nearby imagery. The site needs no API key, backend, or recurring refresh job; all link data ships in
 `assets/data/world.js` (with a matching `world.json` copy).
 
-## TODO when the preprint is posted: arXiv link
+## Citation
 
-Put the abstract-page URL in `LINKS.arxiv`, and update the BibTeX entry in `index.html` (section
-`#citation`): add `eprint`/`archivePrefix` (or the journal line) and remove the comment line above the entry.
+The BibTeX entry in `index.html` (section `#citation`) cites the preprint
+[arXiv:2611.02698](https://arxiv.org/abs/2611.02698).
 
 ## TODO after the first deploy: social preview image
 

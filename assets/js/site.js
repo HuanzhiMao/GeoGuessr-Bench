@@ -3,7 +3,7 @@
    LINKS is the one place to fill in the hero's three buttons. A URL makes its button a link that
    opens in a new tab; an empty one keeps the same button, without a link and marked "soon". */
 var LINKS = {
-  arxiv: "",        /* arXiv abstract page, e.g. "https://arxiv.org/abs/XXXX.XXXXX" */
+  arxiv: "https://arxiv.org/abs/2611.02698",                                /* arXiv abstract page */
   code: "https://github.com/HuanzhiMao/gorilla",                              /* benchmark and harness repository */
   environment: "https://github.com/HuanzhiMao/GeoGuessr-StreetView-Server"   /* offline environment repository */
 };
