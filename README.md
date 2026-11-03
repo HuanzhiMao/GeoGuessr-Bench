@@ -44,6 +44,13 @@ A button with a URL is a link that opens in a new tab. A button whose URL is sti
 does not navigate: it has no `href`, carries `aria-disabled="true"` and a small "soon" tag, and its tooltip
 says "Link coming soon". The benchmark data is not released, so there is no data button.
 
+## Starting-location map
+
+All 282 markers are ordinary Google Maps links that open Street View in a new tab. Each link includes a
+panorama ID and its camera coordinates. If Google cannot find the ID, it uses the coordinates to select
+nearby imagery. The site needs no API key, backend, or recurring refresh job; all link data ships in
+`assets/data/world.js` (with a matching `world.json` copy).
+
 ## TODO when the preprint is posted: arXiv link
 
 Put the abstract-page URL in `LINKS.arxiv`, and update the BibTeX entry in `index.html` (section

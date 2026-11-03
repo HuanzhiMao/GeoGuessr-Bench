@@ -183,7 +183,7 @@
   })();
 
   /* =====================================================================
-     Start-location map (rounded to whole degrees, no entry ids)
+     Start-location map (full-precision coordinates, no entry ids)
      ===================================================================== */
   (function () {
     var host = document.getElementById("location-map");
@@ -243,7 +243,7 @@
       var lon0 = crop[0], top = -crop[1], spanX = crop[2], spanY = crop[3];
       var Wpx = width(card, 900);
       var k = Wpx / spanX, Hpx = Math.round(spanY * k);
-      var root = svg("svg", { width: Wpx, height: Hpx, viewBox: "0 0 " + Wpx + " " + Hpx, role: "img", "aria-label": "World map of the 282 starting locations, colored and shaped by split." });
+      var root = svg("svg", { width: Wpx, height: Hpx, viewBox: "0 0 " + Wpx + " " + Hpx, role: "group", "aria-label": "World map of the 282 starting locations, colored and shaped by split. Each marker opens nearby Google Street View in a new tab." });
       var g0 = svg("g", { transform: "translate(" + (-lon0 * k).toFixed(3) + " " + (top * k).toFixed(3) + ") scale(" + k.toFixed(5) + ")" });
       var grat = svg("g", { class: "graticule" });
       for (var gx = -150; gx <= 150; gx += 30) { grat.appendChild(svg("line", { x1: gx, y1: -90, x2: gx, y2: 90 })); }
@@ -258,7 +258,20 @@
         var g = svg("g", { "data-split": key });
         L.forEach(function (p) {
           if (p.split !== key) { return; }
-          g.appendChild(shape(s, (p.lng - lon0) * k, (top - p.lat) * k, r));
+          var cx = (p.lng - lon0) * k, cy = (top - p.lat) * k;
+          var streetview = p.streetview;
+          var viewpoint = streetview ? streetview.lat + "," + streetview.lng : p.lat + "," + p.lng;
+          var label = s.label + ": " + fixed(Math.abs(p.lat), 5) + "°" + (p.lat < 0 ? "S" : "N") + ", " + fixed(Math.abs(p.lng), 5) + "°" + (p.lng < 0 ? "W" : "E") + ". Open Google Street View near this location (new tab).";
+          var link = svg("a", {
+            class: "map-location",
+            /* A resolved panorama avoids a fresh coordinate search; camera coordinates are the fallback if its ID changes. */
+            href: "https://www.google.com/maps/@?api=1&map_action=pano" + (streetview ? "&pano=" + encodeURIComponent(streetview.pano) : "") + "&viewpoint=" + encodeURIComponent(viewpoint),
+            target: "_blank", rel: "noopener noreferrer", "aria-label": label
+          });
+          link.appendChild(svg("title", {}, label));
+          link.appendChild(svg("circle", { class: "map-location__halo", cx: cx, cy: cy, r: r + 4, "aria-hidden": "true" }));
+          link.appendChild(shape(s, cx, cy, r));
+          g.appendChild(link);
         });
         groups[key] = g;
         root.appendChild(g);
